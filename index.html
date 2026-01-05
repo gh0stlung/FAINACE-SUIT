@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#000000" id="theme-color-meta" />
+  <title>Finance Suite: Pro V50</title>
+  
+  <!-- Core Libraries -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['Space Grotesk', 'monospace'] },
+          colors: {
+            bg: 'var(--bg)',
+            surface: 'var(--surface)',
+            primary: 'var(--primary)', 
+            accent: 'var(--accent)', 
+            alert: '#ef4444', 
+            warning: '#f97316', 
+            success: '#84cc16', 
+            info: '#0ea5e9', 
+            glass: 'var(--glass-bg)',
+          },
+          animation: {
+            'pop': 'pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+            'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+            'fade-in': 'fadeIn 0.3s ease-out forwards',
+            'cursor': 'cursor 1s infinite',
+            'expand': 'expand 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+          },
+          keyframes: {
+            pop: { '0%': { transform: 'scale(0.98) translateY(4px)', opacity: '0' }, '100%': { transform: 'scale(1) translateY(0)', opacity: '1' } },
+            slideUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } },
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            expand: { '0%': { opacity: '0', transform: 'translateY(-5px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            cursor: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    :root { --safe-bottom: env(safe-area-inset-bottom); }
+    
+    /* THEMES */
+    body.theme-cosmic { 
+        --bg: #050507; 
+        --surface: #0e0e11; 
+        --glass-bg: rgba(22, 22, 26, 0.6); 
+        --glass-border: rgba(255, 255, 255, 0.08); 
+        --primary: #cce35a; 
+        --accent: #604090; 
+        --text-main: #e8e8e8; 
+        --orb-opacity: 0.12; 
+        --shadow-color: rgba(0,0,0,0.5); 
+    }
+    
+    body.theme-knight { 
+        --bg: #000000; 
+        --surface: #0a0a0a; 
+        --glass-bg: #111111; 
+        --glass-border: #262626; 
+        --primary: #00e676; 
+        --accent: #222;
+        --text-main: #ffffff; 
+        --orb-opacity: 0; 
+        --shadow-color: rgba(0,0,0,0); 
+    }
+
+    body { background-color: var(--bg); color: var(--text-main); -webkit-tap-highlight-color: transparent; overflow: hidden; user-select: none; transition: background 0.4s ease; margin: 0; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+    
+    .noise-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
+    
+    .bg-ambience { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 0%, #17153b 0%, var(--bg) 70%); opacity: 0.8; transition: opacity 0.5s; }
+    body.theme-knight .bg-ambience { opacity: 0; }
+    
+    /* ORBS */
+    .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: var(--orb-opacity); transition: opacity 0.5s; mix-blend-mode: screen; }
+    .orb-1 { top: -15%; left: -15%; width: 70vw; height: 70vw; background: #4c1d95; animation: float 25s ease-in-out infinite; }
+    .orb-2 { bottom: -15%; right: -15%; width: 70vw; height: 70vw; background: #0891b2; animation: float 30s ease-in-out infinite reverse; }
+    @keyframes float { 0% { transform: translate(0,0); } 50% { transform: translate(30px, 30px); } 100% { transform: translate(0,0); } }
+
+    /* UI Components */
+    .glass-card { 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(16px) saturate(180%); 
+        -webkit-backdrop-filter: blur(16px) saturate(180%); 
+        border: 1px solid var(--glass-border); 
+        border-radius: 24px; 
+        transition: transform 0.15s cubic-bezier(0.2, 0.0, 0, 1), box-shadow 0.2s; 
+        box-shadow: 0 4px 20px var(--shadow-color); 
+    }
+    body.theme-knight .glass-card { backdrop-filter: none; background: #111; }
+    .glass-card:active { transform: scale(0.98); }
+
+    /* Modal System */
+    .sheet-overlay { 
+        position: fixed; inset: 0; z-index: 1005; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); display: flex; align-items: flex-end; 
+        opacity: 0; animation: fadeIn 0.3s ease-out forwards; 
+    }
+    
+    .sheet-content { 
+        width: 100%; background: #0f0f11; border-top: 1px solid rgba(255,255,255,0.1); border-radius: 36px 36px 0 0; display: flex; flex-direction: column; max-height: 92vh; overflow: hidden; box-shadow: 0 -10px 60px rgba(0,0,0,0.8); 
+        transform: translateY(100%); animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+    }
+
+    .sheet-overlay.center-mode { align-items: center; justify-content: center; padding: 20px; }
+    .sheet-overlay.center-mode .sheet-content { 
+        border-radius: 32px; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); 
+        transform: scale(0.98) translateY(4px); opacity: 0; animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+    }
+
+    .sheet-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Input & Cursor */
+    .custom-input { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid transparent; color: white; padding: 16px 20px; border-radius: 20px; font-size: 18px; font-weight: 500; display: flex; align-items: center; transition: all 0.2s; min-height: 56px; white-space: pre; overflow-x: auto; overflow-y: hidden; }
+    .custom-input.active { border-color: var(--primary); background: rgba(255,255,255,0.06); box-shadow: 0 0 0 1px rgba(255,255,255,0.05); }
+    .custom-input:empty:before { content: attr(placeholder); color: #555; }
+    
+    .input-cursor { display: inline-block; width: 2px; height: 20px; background: var(--primary); margin-left: 1px; animation: cursor 1s infinite; flex-shrink: 0; }
+    
+    /* Keyboard */
+    .keyboard-area { background: #050505; border-top: 1px solid rgba(255,255,255,0.06); padding-bottom: env(safe-area-inset-bottom); width: 100%; min-height: 280px; display: flex; flex-direction: column; justify-content: flex-end; opacity: 0; transform: translateY(20px); transition: opacity 0.2s, transform 0.2s; }
+    .keyboard-area.visible { opacity: 1; transform: translateY(0); }
+    .key-row { display: flex; gap: 6px; margin-bottom: 6px; justify-content: center; padding: 0 6px; }
+    .key-btn { height: 50px; flex: 1; min-width: 34px; background: rgba(255,255,255,0.04); color: white; border-radius: 12px; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; border-bottom: 1px solid rgba(0,0,0,0.5); }
+    .key-btn:active { transform: translateY(1px); border-bottom: 0px; background: rgba(255,255,255,0.1); }
+    .key-btn.active-cap { background: var(--primary); color: black; box-shadow: 0 0 10px var(--primary); }
+    
+    /* Calendar & Components */
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; justify-items: center; width: 100%; }
+    .date-cell { width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 13px; font-weight: 600; color: #666; background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); transition: 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; }
+    .date-cell.today { color: var(--primary); border: 1px solid rgba(255,255,255,0.1); }
+    .date-cell.rent-day { border-color: var(--warning); color: var(--warning); background: rgba(249, 115, 22, 0.1); }
+    .date-cell.selected { background: color-mix(in srgb, var(--primary) 20%, transparent); color: var(--primary); box-shadow: 0 0 15px rgba(196, 249, 52, 0.15); border: 1px solid var(--primary); }
+    .date-amt { font-size: 9px; font-weight: 600; margin-top: 1px; color: #fda4af; max-width: 90%; overflow: hidden; white-space: nowrap; }
+    .fund-dot { position: absolute; top: 4px; right: 4px; width: 4px; height: 4px; border-radius: 50%; background-color: var(--success); box-shadow: 0 0 4px var(--success); }
+
+    .fab-fixed { position: fixed; bottom: 32px; right: 24px; width: 64px; height: 64px; background: var(--primary); color: black; border-radius: 24px; display: flex; align-items: center; justify-content: center; z-index: 50; box-shadow: 0 0 20px rgba(178, 230, 45, 0.15); transition: transform 0.3s cubic-bezier(0.2, 0.0, 0, 1); }
+    .fab-fixed:active { transform: scale(0.92); }
+
+    /* Budget Ring */
+    .budget-circle { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .budget-circle circle { fill: none; stroke-width: 6; stroke-linecap: round; } 
+    .budget-bg { stroke: rgba(255,255,255,0.08); }
+    .budget-progress { transition: stroke-dasharray 0.8s cubic-bezier(0.2, 0.0, 0, 1), stroke 0.3s; }
+
+    .text-title { font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; background: linear-gradient(135deg, #fff 0%, #aaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    body.theme-knight .text-title { background: none; -webkit-text-fill-color: white; }
+    
+    /* Animation Utils */
+    .record-expand-enter { opacity: 0; transform: translateY(-5px); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .record-expand-enter-active { opacity: 1; transform: translateY(0); }
+
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+</head>
+<body class="theme-cosmic">
+  <div class="noise-overlay"></div>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react,env">
+    const { useState, useEffect, useRef, useMemo } = React;
+    
+    // --- STORAGE & SAFETY ---
+    const APP_VER = 'v50_';
+    const SCHEMA_VER = 2;
+
+    const safeSet = (key, val) => {
+        try { 
+            if (val === undefined) return;
+            const fullKey = APP_VER + key;
+            const tempKey = fullKey + '_temp';
+            const payload = JSON.stringify({ v: SCHEMA_VER, d: val });
+            localStorage.setItem(tempKey, payload);
+            if (localStorage.getItem(tempKey) === payload) {
+                localStorage.setItem(fullKey, payload);
+                localStorage.removeItem(tempKey);
+            }
+        } catch(e) { console.warn("Storage write failed", e); }
+    };
+
+    const safeParse = (key, def) => { 
+        try { 
+            const fullKey = APP_VER + key;
+            let val = localStorage.getItem(fullKey);
+            if (!val) {
+                const legacyKeys = ['v49_', 'v48_', 'v47_', 'v46_']; 
+                for (const pre of legacyKeys) {
+                    const legVal = localStorage.getItem(pre + key);
+                    if (legVal) {
+                        try {
+                            const parsed = JSON.parse(legVal);
+                            return (parsed && typeof parsed === 'object' && 'd' in parsed) ? parsed.d : parsed;
+                        } catch(e) { continue; }
+                    }
+                }
+                return def;
+            }
+            const parsed = JSON.parse(val);
+            if (parsed && typeof parsed === 'object') {
+                if ('v' in parsed && 'd' in parsed) return parsed.d;
+                return def; 
+            }
+            return def;
+        } catch(e) { return def; } 
+    };
+
+    const safeFloat = (v) => {
+        const n = parseFloat(v);
+        return isNaN(n) ? 0 : Math.round(n * 100) / 100;
+    }
+
+    const pushHistory = (state, title) => {
+        const current = window.history.state;
+        if (current && JSON.stringify(current) === JSON.stringify(state)) return;
+        window.history.pushState(state, title || '');
+    }
+
+    const getLocalISO = () => { const d = new Date(); const offset = d.getTimezoneOffset() * 60000; return new Date(d.getTime() - offset).toISOString().slice(0, 10); };
+    
+    // Fix UTC Month Boundary Bug: Use local time for month keys
+    const getLocalMonthKey = (d) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}`;
+    };
+
+    const parseDate = (iso) => {
+        if(!iso) return new Date();
+        const parts = iso.split('-');
+        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+    }
+    
+    const formatMonth = (iso) => parseDate(iso + '-01').toLocaleString('default',{month:'long',year:'numeric'});
+    const formatDateShort = (iso) => parseDate(iso).toLocaleDateString('default', { day: 'numeric', month: 'short' });
+
+    // --- ICONS ---
+    const Icon = ({ name, size=24, className }) => {
+      const p = { width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className };
+      switch (name) {
+        case 'home': return <svg {...p}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+        case 'plus': return <svg {...p}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+        case 'trash': return <svg {...p}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>;
+        case 'x': return <svg {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+        case 'chevronLeft': return <svg {...p}><polyline points="15 18 9 12 15 6"/></svg>;
+        case 'chevronRight': return <svg {...p}><polyline points="9 18 15 12 9 6"/></svg>;
+        case 'receipt': return <svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
+        case 'wallet': return <svg {...p}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>;
+        case 'backspace': return <svg {...p}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>;
+        case 'pencil': return <svg {...p}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
+        case 'calendar': return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+        case 'arrowUp': return <svg {...p}><polyline points="18 15 12 9 6 15"/></svg>;
+        case 'arrowDown': return <svg {...p}><polyline points="6 9 12 15 18 9"/></svg>;
+        case 'shift': return <svg {...p}><path d="M12 2l-7 7h4v9h6v-9h4z"/></svg>;
+        case 'bolt': return <svg {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+        case 'chart': return <svg {...p}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+        case 'bank': return <svg {...p}><rect x="2" y="10" width="20" height="8" rx="1"/><path d="M12 2L2 7h20L12 2z"/><line x1="2" y1="18" x2="22" y2="18"/></svg>;
+        default: return null;
+      }
+    };
+
+    // --- SHARED COMPONENTS ---
+    const Input = ({ value, placeholder, onClick, active }) => {
+        const ref = useRef(null);
+        useEffect(() => { if(active && ref.current) ref.current.scrollLeft = ref.current.scrollWidth; }, [value, active]);
+        return (
+            <div ref={ref} onClick={onClick} className={`custom-input ${active ? 'active' : ''}`}>
+                <span className={!value ? "text-slate-500" : "text-white"}>{value || placeholder}</span>
+                {active && <span className="input-cursor"></span>}
+            </div>
+        );
+    }
+
+    const UnifiedModal = ({ isOpen, onClose, title, children, activeField, onKeyPress, onDateChange, dateValue, overrideView, setOverrideView, primaryAction, caps, toggleCaps, highlightDay, sheetMode }) => {
+        if(!isOpen) return null;
+        const [kbReady, setKbReady] = useState(false);
+        const numKeys = ['1','2','3','4','5','6','7','8','9','.','0','back'];
+        const textKeys = [['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['z','x','c','v','b','n','m','back'],['space']];
+        const isNum = activeField?.type === 'number';
+        const timerRef = useRef(null);
+        const intervalRef = useRef(null);
+        
+        const isReport = sheetMode === 'report';
+
+        useEffect(() => { 
+            let t;
+            if (isOpen && !isReport) t = setTimeout(() => setKbReady(true), 50); 
+            else setKbReady(false);
+            return () => { clearTimeout(t); clearTimeout(timerRef.current); clearInterval(intervalRef.current); };
+        }, [isOpen, isReport]);
+
+        const handleBackDown = (e) => {
+            e.preventDefault();
+            onKeyPress('back');
+            timerRef.current = setTimeout(() => {
+                intervalRef.current = setInterval(() => onKeyPress('back'), 80);
+            }, 400); 
+        };
+        const handleBackUp = () => { clearTimeout(timerRef.current); clearInterval(intervalRef.current); };
+
+        return (
+            <div className="sheet-overlay input-mode" onClick={onClose}>
+                <div className="sheet-content" onClick={e=>e.stopPropagation()}>
+                    <div className="flex justify-between items-center p-4 border-b border-white/10">
+                        <h2 className="text-lg font-bold text-white pl-2">{title}</h2>
+                        <button onClick={onClose} className="p-2 bg-white/5 rounded-full"><Icon name="x" size={20}/></button>
+                    </div>
+                    <div className="sheet-body">{children}</div>
+                    {!isReport && activeField && (
+                        <div className={`keyboard-area pt-2 ${kbReady ? 'visible' : ''}`}>
+                             <div className="flex justify-between px-4 pb-2 border-b border-white/5 mb-2 h-8 items-center">
+                                 {overrideView === 'calendar' ? (
+                                    <button onClick={()=>setOverrideView(null)} className="text-slate-400 text-xs font-bold uppercase flex items-center gap-1"><Icon name="chevronLeft" size={14}/> Input</button>
+                                 ) : <div></div>}
+                                 {primaryAction && <button onClick={primaryAction} className="bg-primary text-black px-4 py-1 rounded-full text-xs font-bold shadow-lg active:scale-95 transition">SAVE</button>}
+                             </div>
+                             {overrideView === 'calendar' ? (
+                                 <div className="px-4 pb-4 h-full flex-1 min-h-[300px]"><EmbeddedCalendar selectedDate={dateValue} onChange={onDateChange} highlightDay={highlightDay} /></div>
+                             ) : isNum ? (
+                                 <div className="grid grid-cols-3 gap-2 p-2 pb-6">
+                                     {numKeys.map(k => (
+                                        <button key={k} onClick={(e)=>k!=='back'&&onKeyPress(k)} 
+                                            onPointerDown={k==='back'?handleBackDown:null} onPointerUp={k==='back'?handleBackUp:null} onPointerLeave={k==='back'?handleBackUp:null}
+                                            className={`key-btn ${k==='back'?'bg-white/5 text-slate-400':''}`}>{k==='back'?<Icon name="backspace" size={24}/>:k}
+                                        </button>
+                                     ))}
+                                 </div>
+                             ) : (
+                                 <div className="p-2 space-y-1 pb-6">
+                                     {textKeys.map((row, i) => (
+                                         <div key={i} className="key-row">
+                                             {i===2 && <button onClick={toggleCaps} className={`key-btn ${caps?'active-cap':'bg-white/5'}`} style={{flex:0.5}}><Icon name="shift" size={18}/></button>}
+                                             {row.map(k => <button key={k} onClick={()=>k!=='back'&&onKeyPress(k)} onPointerDown={k==='back'?handleBackDown:null} onPointerUp={k==='back'?handleBackUp:null} onPointerLeave={k==='back'?handleBackUp:null} className={`key-btn ${k==='space'?'flex-[2] text-xs':''}`}>{k==='back'?<Icon name="backspace" size={20}/>:k==='space'?'SPACE': (caps ? k.toUpperCase() : k)}</button>)}
+                                         </div>
+                                     ))}
+                                 </div>
+                             )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const EmbeddedCalendar = ({ selectedDate, onChange, highlightDay }) => {
+        const [viewDate, setViewDate] = useState(() => selectedDate ? parseDate(selectedDate) : new Date());
+        const [dir, setDir] = useState(null);
+        const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth()+1, 0).getDate();
+        const startDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+        const today = getLocalISO();
+        
+        const changeMonth = (d) => { setDir(d>0?'right':'left'); setTimeout(()=>{ const x = new Date(viewDate); x.setMonth(x.getMonth() + d); setViewDate(x); setDir(null); },50); };
+        const handleDayClick = (day) => {
+            const m = String(viewDate.getMonth()+1).padStart(2,'0');
+            const d = String(day).padStart(2,'0');
+            onChange(`${viewDate.getFullYear()}-${m}-${d}`);
+        };
+
+        return (
+            <div className="p-4 bg-white/5 rounded-3xl animate-pop h-full flex flex-col justify-center min-h-[300px]">
+                <div className="flex justify-between items-center mb-4">
+                   <div className="w-8"></div>
+                   <div className="flex items-center gap-2">
+                      <button onClick={()=>changeMonth(-1)}><Icon name="chevronLeft" size={16}/></button>
+                      <span className="font-bold text-white transition-all">{viewDate.toLocaleString('default',{month:'long', year:'numeric'})}</span>
+                      <button onClick={()=>changeMonth(1)}><Icon name="chevronRight" size={16}/></button>
+                   </div>
+                   <div className="w-8"></div>
+                </div>
+                <div className={`cal-grid ${dir==='left'?'animate-slide-left':dir==='right'?'animate-slide-right':''}`}>
+                    {['S','M','T','W','T','F','S'].map(d=><div key={d} className="text-xs text-slate-500 font-bold">{d}</div>)}
+                    {Array.from({length: startDay}).map((_,i)=><div key={`e-${i}`}></div>)}
+                    {Array.from({length: daysInMonth}).map((_,i)=>{
+                        const day = i+1;
+                        const iso = `${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                        const isRentDay = highlightDay && day === Number(highlightDay);
+                        return <div key={day} onClick={()=>handleDayClick(day)} className={`date-cell ${iso===selectedDate?'selected':iso===today?'today':isRentDay?'rent-day':''}`}>{day}</div>;
+                    })}
+                </div>
+            </div>
+        );
+    };
+
+    // --- APP: RENTBOOK ---
+    const RentBook = ({ onBack }) => {
+      const [tenants, setTenants] = useState(() => safeParse('rentTracker', []));
+      const [view, setView] = useState('dashboard');
+      const [selId, setSelId] = useState(null);
+      const [sheetMode, setSheetMode] = useState(null); 
+      const [activeField, setActiveField] = useState(null); 
+      const [overrideView, setOverrideView] = useState(null);
+      const [caps, setCaps] = useState(false);
+      
+      const [tenantForm, setTenantForm] = useState({ name:'', houseNo:'', rent:'', deposit:'', rentDay:'1' });
+      const [billForm, setBillForm] = useState({ oldUnit:'', newUnit:'', manualBill:'', monthISO: getLocalMonthKey(new Date()) });
+      const [payForm, setPayForm] = useState({ amount:'', date: getLocalISO() });
+      const [expandedRecs, setExpandedRecs] = useState({});
+      const [activeRecId, setActiveRecId] = useState(null);
+      const [delTarget, setDelTarget] = useState(null);
+
+      useEffect(() => safeSet('rentTracker', tenants), [tenants]);
+
+      // 3. RENTBOOK BALANCE CARRY-FORWARD
+      const tenantStatsMap = useMemo(() => {
+          const stats = {};
+          tenants.forEach(t => {
+               if(!t.records) { stats[t.id] = {balance:0, currentStats:{}, displayRecords:[]}; return; }
+               let runningBalance = 0; 
+               const sortedAsc = [...t.records].sort((a,b) => a.monthISO.localeCompare(b.monthISO));
+               const processed = sortedAsc.map(r => {
+                   const opening = runningBalance;
+                   const billTotal = safeFloat((Number(r.rentAmount)||0) + (Number(r.electricBill)||0));
+                   const paidTotal = r.payments ? r.payments.reduce((acc,p) => safeFloat(acc+(Number(p.amount)||0)), 0) : 0;
+                   
+                   runningBalance = safeFloat(opening + billTotal - paidTotal);
+                   
+                   return { ...r, openingBalance: opening, billTotal, paidTotal, runningBalance };
+               });
+               stats[t.id] = {
+                   balance: runningBalance,
+                   displayRecords: processed.reverse(),
+                   currentStats: processed.length ? { rent: processed[processed.length-1].rentAmount, elec: processed[processed.length-1].electricBill, paid: processed[processed.length-1].paidTotal, month: processed[processed.length-1].month } : { rent:0, elec:0, paid:0, month:'-' }
+               };
+          });
+          return stats;
+      }, [tenants]);
+
+      const stateRef = useRef({ view, sheetMode, delTarget });
+      stateRef.current = { view, sheetMode, delTarget };
+
+      useEffect(() => {
+          const handlePop = (e) => {
+              const { view, sheetMode, delTarget } = stateRef.current;
+              if (delTarget) { setDelTarget(null); return; }
+              if (sheetMode) { setSheetMode(null); return; }
+              if (view === 'details') { setView('dashboard'); setSelId(null); return; }
+              onBack(); 
+          };
+          window.addEventListener('popstate', handlePop);
+          return () => window.removeEventListener('popstate', handlePop);
+      }, []);
+
+      const openDetails = (id) => {
+          setSelId(id);
+          setView('details');
+          pushHistory({level:'details'}, 'Details');
+      }
+
+      const openSheet = (mode) => {
+          setSheetMode(mode);
+          pushHistory({level:'sheet'}, 'Sheet');
+      }
+
+      const activate = (field, type) => { setActiveField({field, type}); setCaps(false); setOverrideView(null); }; 
+      const handleKeyPress = (k) => {
+          if(!activeField) return;
+          const { field, type } = activeField;
+          const update = (prev) => {
+              let val = String(prev[field] || '');
+              if(k==='back') return {...prev, [field]: val.slice(0,-1)};
+              if(k==='space') return {...prev, [field]: val+' '};
+              if(type==='number' && k==='.' && val.includes('.')) return prev; 
+              if(type==='number' && val==='' && k==='0' && field!=='oldUnit' && field!=='newUnit') return prev;
+              return {...prev, [field]: val+(caps ? k.toUpperCase() : k)};
+          }
+          if(sheetMode.includes('Tenant')) setTenantForm(prev => update(prev));
+          if(sheetMode === 'bill') setBillForm(prev => update(prev));
+          if(sheetMode === 'pay') setPayForm(prev => update(prev));
+      };
+
+      const saveTenant = () => {
+          if(!tenantForm.name.trim()) return;
+          let rd = parseInt(tenantForm.rentDay);
+          if(isNaN(rd) || rd < 1) rd = 1;
+          if(rd > 31) rd = 31;
+          const newT = { name: tenantForm.name, houseNo: tenantForm.houseNo, baseRent: safeFloat(tenantForm.rent), securityDeposit: safeFloat(tenantForm.deposit), rentDay: String(rd) };
+          setTenants(prev => {
+              if(sheetMode === 'addTenant') return [{ id: Date.now(), ...newT, records: [] }, ...prev];
+              return prev.map(t => t.id === selId ? { ...t, ...newT } : t);
+          });
+          setSheetMode(null); setActiveField(null);
+      };
+
+      const generateBill = () => {
+          setTenants(prev => {
+              const tIdx = prev.findIndex(t => t.id === selId);
+              if (tIdx === -1) return prev;
+              const tenant = prev[tIdx];
+              const prevRead = safeFloat(billForm.oldUnit); 
+              const currRead = safeFloat(billForm.newUnit); 
+              const units = Math.max(0, safeFloat(currRead - prevRead)); 
+              const manual = billForm.manualBill === '' ? -1 : safeFloat(billForm.manualBill); 
+              const rent = safeFloat(tenant.baseRent); 
+              const elec = manual >= 0 ? manual : safeFloat(units * 8); 
+              const isManual = manual >= 0;
+              const newRec = { 
+                  id: Date.now(), 
+                  monthISO: billForm.monthISO, 
+                  month: formatMonth(billForm.monthISO), 
+                  prevReading: prevRead, 
+                  currReading: currRead, 
+                  units, 
+                  rentAmount: rent, 
+                  electricBill: elec, 
+                  totalBill: safeFloat(rent + elec),
+                  isManual,
+                  payments: [] 
+              };
+              const existingIdx = (tenant.records || []).findIndex(r => r.monthISO === billForm.monthISO);
+              let updatedRecords = [...(tenant.records || [])];
+              if (existingIdx !== -1) {
+                  const oldRec = updatedRecords[existingIdx];
+                  updatedRecords[existingIdx] = { ...newRec, id: oldRec.id, payments: oldRec.payments };
+              } else {
+                  updatedRecords = [newRec, ...updatedRecords];
+              }
+              if (updatedRecords.length > 100) updatedRecords = updatedRecords.slice(0, 100);
+              const newTenants = [...prev];
+              newTenants[tIdx] = { ...tenant, records: updatedRecords };
+              return newTenants;
+          });
+          setSheetMode(null); setActiveField(null);
+      };
+
+      const addPayment = () => {
+          const amt = safeFloat(payForm.amount);
+          if(amt <= 0) return;
+          setTenants(prev => {
+              const tIdx = prev.findIndex(t => t.id === selId);
+              if (tIdx === -1) return prev;
+              const tenant = prev[tIdx];
+              const rIdx = tenant.records.findIndex(r => r.id === activeRecId);
+              if (rIdx === -1) return prev;
+              const newRecords = [...tenant.records];
+              const record = newRecords[rIdx];
+              const newPayments = [...(record.payments || []), { id: Date.now(), date: payForm.date, amount: amt }];
+              newRecords[rIdx] = { ...record, payments: newPayments };
+              const newTenants = [...prev];
+              newTenants[tIdx] = { ...tenant, records: newRecords };
+              return newTenants;
+          });
+          setSheetMode(null); setActiveField(null);
+      };
+
+      const deleteItem = () => {
+          if (!delTarget) return;
+          setTenants(prev => {
+              if (delTarget.type === 'tenant') {
+                  setView('dashboard'); 
+                  return prev.filter(t => t.id !== delTarget.id);
+              }
+              const tIdx = prev.findIndex(t => t.id === delTarget.pid);
+              if (tIdx === -1) return prev;
+              const tenant = prev[tIdx];
+              const newTenants = [...prev];
+              if (delTarget.type === 'record') {
+                  newTenants[tIdx] = { ...tenant, records: tenant.records.filter(r => r.id !== delTarget.id) };
+              } else if (delTarget.type === 'payment') {
+                  const rIdx = tenant.records.findIndex(r => r.id === delTarget.recId);
+                  if (rIdx !== -1) {
+                      const newRecs = [...tenant.records];
+                      newRecs[rIdx] = { ...newRecs[rIdx], payments: newRecs[rIdx].payments.filter(p => p.id !== delTarget.id) };
+                      newTenants[tIdx] = { ...tenant, records: newRecs };
+                  }
+              }
+              return newTenants;
+          });
+          setDelTarget(null);
+          if (delTarget.type === 'tenant') setView('dashboard');
+      };
+
+      const activeTenant = tenants.find(t => t.id === selId);
+      const { balance, currentStats, displayRecords } = activeTenant ? (tenantStatsMap[activeTenant.id] || { balance:0, displayRecords:[] }) : { balance: 0, currentStats:{}, displayRecords:[] };
+      const totalTenants = tenants.length;
+      const dueCount = Object.values(tenantStatsMap).filter(s => s.balance > 0).length;
+
+      return (
+          <div className="h-full flex flex-col animate-pop justify-center">
+              <div className="pt-10 px-6 pb-2 flex justify-between items-center z-20">
+                  <div className="flex items-center gap-4">
+                      {view !== 'dashboard' && (
+                          <button onClick={()=>{setView('dashboard'); setSelId(null)}} className="bg-white/10 p-2 rounded-full"><Icon name="chevronLeft" size={24}/></button>
+                      )}
+                      <h1 className="text-2xl text-title tracking-widest">RENTBOOK</h1>
+                  </div>
+                  {view==='dashboard' && <button onClick={onBack} className="bg-white/10 px-4 py-2 rounded-full text-xs font-bold text-slate-300">EXIT</button>}
+                  {view==='details' && <button onClick={()=>{setTenantForm({name:activeTenant.name, houseNo:activeTenant.houseNo, rent:activeTenant.baseRent, deposit:activeTenant.securityDeposit, rentDay:activeTenant.rentDay}); openSheet('editTenant'); activate('name','text')}} className="p-2 bg-white/10 rounded-full"><Icon name="pencil" size={20}/></button>}
+              </div>
+
+              {view === 'dashboard' && (
+                  <div className="px-6 mb-2">
+                      <div className="glass-card p-4 flex justify-between items-center bg-gradient-to-r from-gray-900 to-gray-800">
+                          <div className="text-center"><p className="text-[10px] text-slate-400 font-bold uppercase">Properties</p><p className="font-bold text-white text-xl">{totalTenants}</p></div>
+                          <div className="text-center"><p className="text-[10px] text-slate-400 font-bold uppercase">Pending</p><p className="font-bold text-warning text-xl">{dueCount}</p></div>
+                          <div className="text-center opacity-30"><Icon name="home" size={24}/></div>
+                      </div>
+                  </div>
+              )}
+
+              <div className="flex-1 overflow-y-auto px-5 pb-32 no-scroll z-10 pt-2">
+                  {view === 'dashboard' && <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-3 ml-1">Tenants</h3>}
+
+                  {view === 'dashboard' && tenants.map((t) => {
+                      const stats = tenantStatsMap[t.id] || {balance:0};
+                      return (
+                          <div key={t.id} onClick={()=>openDetails(t.id)} className="glass-card p-4 flex justify-between items-center animate-pop active:scale-95 transition mb-3">
+                              <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center font-bold text-white border border-white/10 text-lg">{(t.name && t.name[0]) || '?'}</div>
+                                  <div>
+                                      <div className="flex items-center gap-2">
+                                          <h3 className="font-bold text-white leading-tight text-lg">{t.name}</h3>
+                                      </div>
+                                      <p className="text-xs text-slate-400 mt-1">{t.houseNo}</p>
+                                  </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                  {stats.balance > 0 
+                                      ? <span className="font-bold text-warning">₹{stats.balance}</span> 
+                                      : stats.balance < 0 
+                                          ? <span className="font-bold text-success">₹{Math.abs(stats.balance)} Adv</span>
+                                          : <span className="font-bold text-info">Settled</span>
+                                  }
+                                  <button onClick={(e)=>{e.stopPropagation(); setDelTarget({type:'tenant', id:t.id})}} className="p-2 text-slate-500 hover:text-alert"><Icon name="trash" size={16}/></button>
+                              </div>
+                          </div>
+                      )
+                  })}
+
+                  {view === 'details' && activeTenant && (
+                      <div className="animate-slide-up space-y-4 pb-12">
+                          
+                          <div className="glass-card p-5 bg-gradient-to-b from-white/10 to-transparent relative backdrop-blur-xl border-b border-white/10">
+                               <div className="text-center mb-4">
+                                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Net Balance</p>
+                                   <h1 className={`text-4xl font-mono font-bold ${balance > 0 ? 'text-alert' : balance < 0 ? 'text-success' : 'text-white'}`}>
+                                       {balance > 0 ? `₹${balance}` : balance < 0 ? `- ₹${Math.abs(balance)}` : 'Settled'}
+                                   </h1>
+                                   {balance > 0 && <p className="text-xs text-warning mt-1 font-bold">DUE</p>}
+                                   {balance < 0 && <p className="text-xs text-success mt-1 font-bold">ADVANCE</p>}
+                               </div>
+
+                               <div className="mt-3 flex justify-center">
+                                   <div className="bg-white/5 px-4 py-1.5 rounded-full border border-white/5 flex items-center gap-2">
+                                       <span className="text-[10px] text-slate-500 uppercase tracking-widest opacity-80">Security Deposit</span>
+                                       <span className="text-xs font-mono text-slate-300">₹{activeTenant.securityDeposit || 0}</span>
+                                   </div>
+                               </div>
+                               
+                               <button onClick={()=>{setBillForm({oldUnit: displayRecords[0]?.currReading || '', newUnit:'', manualBill:'', monthISO: getLocalMonthKey(new Date()) }); openSheet('bill'); activate('newUnit','number')}} className="w-full mt-4 bg-primary text-black font-bold py-3 rounded-xl shadow-lg active:scale-95 transition">+ NEW BILL</button>
+                          </div>
+
+                          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-2">History</h3>
+
+                          <div className="space-y-3">
+                              {displayRecords.map((r, index) => {
+                                  const isExp = expandedRecs[r.id];
+                                  return (
+                                      <div key={r.id} className="glass-card overflow-hidden transition-all duration-300 bg-[#18181b]/60 backdrop-blur-md">
+                                          <div onClick={()=>setExpandedRecs(p=>({...p, [r.id]:!isExp}))} className="p-4 flex justify-between items-center cursor-pointer active:bg-white/5">
+                                              <div>
+                                                  <h4 className="font-bold text-white text-sm">{r.month}</h4>
+                                                  <div className="flex gap-2 mt-1">
+                                                      <span className="text-[10px] bg-white/10 px-2 rounded text-white font-bold">Bill: ₹{r.billTotal}</span>
+                                                  </div>
+                                              </div>
+                                              <div className="text-right">
+                                                  <p className="text-[9px] text-slate-500 uppercase font-bold">Balance After</p>
+                                                  <p className={`font-mono font-bold ${r.runningBalance>0?'text-warning':r.runningBalance<0?'text-success':'text-slate-400'}`}>
+                                                      {r.runningBalance > 0 ? `₹${r.runningBalance}` : r.runningBalance < 0 ? `Adv ₹${Math.abs(r.runningBalance)}` : '0'}
+                                                  </p>
+                                              </div>
+                                          </div>
+                                          
+                                          {isExp && (
+                                              <div className="bg-white/5 border-t border-white/5 animate-expand origin-top">
+                                                  <div className="p-4 text-sm space-y-2">
+                                                      {/* Visual Polish: Compact Rows & Glow */}
+                                                      <div className="flex justify-between items-center p-1.5 rounded-lg bg-primary/5 border border-primary/10 shadow-[0_0_8px_rgba(204,227,90,0.1)] transition hover:bg-white/10">
+                                                           <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">Rent</span>
+                                                           <span className="font-mono font-bold text-white text-xs">₹{r.rentAmount}</span>
+                                                      </div>
+
+                                                      <div className="flex justify-between items-center p-1.5 rounded-lg bg-warning/5 border border-warning/10 shadow-[0_0_8px_rgba(249,115,22,0.1)] transition hover:bg-white/10">
+                                                           <div className="flex items-center gap-2">
+                                                               <Icon name="bolt" size={12} className="text-orange-400"/>
+                                                               <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">Electric</span>
+                                                           </div>
+                                                           <div className="text-right">
+                                                               <span className="font-mono font-bold text-white text-xs">₹{r.electricBill}</span>
+                                                               <div className="text-[8px] text-slate-500 font-mono">({r.currReading} - {r.prevReading})</div>
+                                                           </div>
+                                                      </div>
+
+                                                      {/* Carry Forward Logic Display */}
+                                                      {r.openingBalance !== 0 && (
+                                                          <div className="flex justify-between items-center p-1.5 px-2">
+                                                              <span className="text-[10px] text-slate-500 uppercase">Prev Balance</span>
+                                                              <span className={`font-mono text-xs ${r.openingBalance > 0 ? 'text-warning' : 'text-success'}`}>
+                                                                  {r.openingBalance > 0 ? `+ ₹${r.openingBalance}` : `- ₹${Math.abs(r.openingBalance)}`}
+                                                              </span>
+                                                          </div>
+                                                      )}
+                                                      
+                                                      <div className="space-y-1 pt-1">
+                                                          <p className="text-[9px] font-bold text-slate-500 uppercase">Payments</p>
+                                                          {r.payments.length === 0 ? <p className="text-[10px] text-slate-600 italic">No payments recorded</p> : 
+                                                              r.payments.map(p => (
+                                                                  <div key={p.id} className="flex justify-between items-center bg-black/20 p-1.5 rounded-lg text-xs">
+                                                                      <span className="text-slate-400 font-mono text-[10px]">{formatDateShort(p.date)}</span>
+                                                                      <div className="flex items-center gap-2"><span className="font-bold text-success text-[10px]">₹{p.amount}</span><button onClick={()=>setDelTarget({type:'payment', id:p.id, pid:activeTenant.id, recId:r.id})} className="text-slate-600 hover:text-alert"><Icon name="trash" size={10}/></button></div>
+                                                                  </div>
+                                                              ))
+                                                          }
+                                                      </div>
+                                                      
+                                                      <div className="flex gap-2 pt-2">
+                                                          <button onClick={(e)=>{e.stopPropagation(); setDelTarget({type:'record', id:r.id, pid:activeTenant.id})}} className="flex-1 py-3 bg-red-500/10 text-alert rounded-xl font-bold text-[10px] border border-red-500/20 active:scale-95 transition">DELETE BILL</button>
+                                                          <button onClick={()=>{
+                                                              const pending = safeFloat(r.totalBill - r.paidTotal + r.openingBalance); 
+                                                              setActiveRecId(r.id); 
+                                                              setPayForm({amount: pending > 0 ? pending : '', date:getLocalISO()}); 
+                                                              openSheet('pay'); 
+                                                              activate('amount','number')
+                                                          }} className="flex-[2] py-3 bg-white/10 text-white rounded-xl font-bold text-[10px] active:scale-95 transition hover:bg-white/20">ADD PAYMENT</button>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          )}
+                                      </div>
+                                  )
+                              })}
+                          </div>
+                      </div>
+                  )}
+              </div>
+              
+              {view==='dashboard' && <button onClick={()=>{setTenantForm({name:'',houseNo:'',rent:'',deposit:'',rentDay:'1'}); openSheet('addTenant'); activate('name','text')}} className="fab-fixed"><Icon name="plus" size={32}/></button>}
+
+              <UnifiedModal 
+                  isOpen={!!sheetMode} onClose={()=>setSheetMode(null)} title={sheetMode==='pay'?'Record Payment':sheetMode==='bill'?'New Bill':'Property'}
+                  activeField={activeField} onKeyPress={handleKeyPress} overrideView={overrideView} setOverrideView={setOverrideView}
+                  onDateChange={(d)=>setPayForm(p=>({...p, date:d}))} dateValue={payForm.date}
+                  primaryAction={()=>{ if(sheetMode==='pay') addPayment(); else if(sheetMode==='bill') generateBill(); else saveTenant(); }} caps={caps} toggleCaps={()=>setCaps(!caps)}
+                  highlightDay={activeTenant?.rentDay} 
+                  sheetMode={sheetMode}
+              >
+                  {(sheetMode === 'addTenant' || sheetMode === 'editTenant') && (
+                      <div className="space-y-3">
+                          <Input value={tenantForm.name} placeholder="Name" onClick={()=>activate('name','text')} active={activeField?.field==='name'} />
+                          <Input value={tenantForm.houseNo} placeholder="House No" onClick={()=>activate('houseNo','text')} active={activeField?.field==='houseNo'} />
+                          <div className="flex gap-2"><Input value={tenantForm.rent} placeholder="Rent ₹" onClick={()=>activate('rent','number')} active={activeField?.field==='rent'} /><Input value={tenantForm.rentDay} placeholder="Due Day" onClick={()=>activate('rentDay','number')} active={activeField?.field==='rentDay'} /></div>
+                          <Input value={tenantForm.deposit} placeholder="Deposit (Info only)" onClick={()=>activate('deposit','number')} active={activeField?.field==='deposit'} />
+                      </div>
+                  )}
+                  {sheetMode === 'bill' && (
+                      <div className="space-y-3">
+                          <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl mb-2">
+                               <button onClick={()=>{let [y,m]=billForm.monthISO.split('-'); m--; if(m<1){m=12;y--}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}}><Icon name="chevronLeft" size={20}/></button>
+                               <span className="font-bold text-white">{formatMonth(billForm.monthISO)}</span>
+                               <button onClick={()=>{let [y,m]=billForm.monthISO.split('-'); m++; if(m>12){m=1;y++}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}}><Icon name="chevronRight" size={20}/></button>
+                          </div>
+                          <div className="flex gap-2"><Input value={billForm.oldUnit} placeholder="Old Reading" onClick={()=>activate('oldUnit','number')} active={activeField?.field==='oldUnit'} /><Input value={billForm.newUnit} placeholder="New Reading" onClick={()=>activate('newUnit','number')} active={activeField?.field==='newUnit'} /></div>
+                          <Input value={billForm.manualBill} placeholder="Manual Elec (Opt)" onClick={()=>activate('manualBill','number')} active={activeField?.field==='manualBill'} />
+                      </div>
+                  )}
+                  {sheetMode === 'pay' && (
+                      <div className="space-y-6 pt-4">
+                          <div className="text-center">
+                              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Amount</p>
+                              <div onClick={()=>activate('amount','number')} className={`text-5xl font-mono font-bold text-center py-4 border-b border-white/10 ${activeField?.field==='amount' ? 'text-white' : 'text-primary'}`}>₹{payForm.amount || '0'}{activeField?.field==='amount' && <span className="input-cursor"></span>}</div>
+                          </div>
+                          <div onClick={()=>{setOverrideView('calendar')}} className="flex items-center justify-center gap-2 text-white py-4 bg-white/5 rounded-xl border border-white/5 active:scale-95 transition cursor-pointer">
+                              <Icon name="calendar" size={16}/> {formatDateShort(payForm.date)} <span className="text-xs text-slate-400">(Tap to change)</span>
+                          </div>
+                      </div>
+                  )}
+              </UnifiedModal>
+
+              {delTarget && <div className="sheet-overlay center-mode" onClick={()=>setDelTarget(null)}><div className="glass-card p-6 w-full max-w-xs text-center"><h2 className="text-lg font-bold text-white mb-4">Confirm Delete?</h2><div className="flex gap-3"><button onClick={()=>setDelTarget(null)} className="flex-1 py-3 rounded-xl bg-white/10 text-white">Cancel</button><button onClick={deleteItem} className="flex-1 py-3 rounded-xl bg-alert text-white font-bold">Delete</button></div></div></div>}
+          </div>
+      )
+    };
+
+    // --- APP: WALLET ---
+    const Wallet = ({ onBack }) => {
+        const [txs, setTxs] = useState(() => safeParse('walletTxs', []));
+        const [funds, setFunds] = useState(() => safeParse('walletFunds', [])); 
+        const [budget, setBudget] = useState(() => safeParse('budget', 5000));
+        
+        const [sheetMode, setSheetMode] = useState(null);
+        const [activeField, setActiveField] = useState(null);
+        
+        const [form, setForm] = useState({ id: null, amt:'', note:'', cat:'veg' });
+        
+        const [viewDate, setViewDate] = useState(new Date());
+        const [selDate, setSelDate] = useState(getLocalISO()); 
+        const [delId, setDelId] = useState(null);
+        const [delFundId, setDelFundId] = useState(null); 
+        const [caps, setCaps] = useState(false);
+        const [direction, setDirection] = useState(null);
+
+        useEffect(() => safeSet('walletTxs', txs), [txs]);
+        useEffect(() => safeSet('walletFunds', funds), [funds]);
+        useEffect(() => safeSet('budget', budget), [budget]);
+
+        const stateRef = useRef({ sheetMode, delId, delFundId });
+        stateRef.current = { sheetMode, delId, delFundId };
+
+        useEffect(() => {
+            const handlePop = (e) => {
+                const { sheetMode, delId, delFundId } = stateRef.current;
+                if (delId) { setDelId(null); return; }
+                if (delFundId) { setDelFundId(null); return; }
+                if (sheetMode) { setSheetMode(null); return; }
+                onBack();
+            };
+            window.addEventListener('popstate', handlePop);
+            return () => window.removeEventListener('popstate', handlePop);
+        }, []);
+
+        const openSheet = (mode) => {
+            setSheetMode(mode);
+            pushHistory({level:'sheet'}, 'Sheet');
+        }
+
+        const changeMonth = (dir) => { setDirection(dir > 0 ? 'right' : 'left'); setTimeout(() => { const d = new Date(viewDate); d.setMonth(d.getMonth() + dir); setViewDate(d); setDirection(null); }, 50); };
+        const activate = (field, type) => { setActiveField({field, type}); setCaps(false); } 
+        const handleKeyPress = (k) => {
+            if(!activeField) return;
+            const { field, type } = activeField;
+            // Harden Budget Sanitization
+            if(sheetMode === 'budget') { 
+                if(k==='back') setBudget(prev => {
+                    const str = String(prev);
+                    if(str.length <= 1) return ''; 
+                    return str.slice(0,-1);
+                }); 
+                else if(k!=='space') { 
+                    setBudget(prev => {
+                       const val = String(prev || '') + k;
+                       if((val.match(/\./g) || []).length > 1) return prev;
+                       return val;
+                    });
+                }
+                return; 
+            }
+            setForm(p => {
+                let val = String(p[field] || '');
+                if(k==='back') val = val.slice(0,-1);
+                else if(k==='space') val += ' ';
+                else if(type==='number' && k==='.' && val.includes('.')) return p; 
+                else val += (caps?k.toUpperCase():k);
+                return {...p, [field]: val};
+            });
+        };
+
+        const saveTx = () => { 
+            if(!form.amt) { setForm(p=>({...p, amt:''})); return; } 
+            
+            if(sheetMode === 'addFund') {
+                const fund = { id: Date.now(), amount: safeFloat(form.amt), note: form.note || 'Added Money', date: selDate };
+                setFunds(prev => [fund, ...prev].slice(0,300)); 
+                setSheetMode(null); setActiveField(null);
+                return;
+            }
+
+            const tx = { id: form.id || Date.now(), amount: safeFloat(form.amt), category: form.cat, title: form.note || form.cat, date: selDate }; 
+            setTxs(prev => {
+                let next;
+                if (form.id) next = prev.map(t => t.id === form.id ? tx : t);
+                else next = [tx, ...prev];
+                if(next.length > 300) return next.slice(0, 300);
+                return next;
+            });
+            setSheetMode(null); setActiveField(null); 
+        };
+
+        const deleteTx = () => {
+             setTxs(prev => prev.filter(t => t.id !== delId));
+             setDelId(null);
+        };
+
+        const deleteFund = () => {
+            setFunds(prev => prev.filter(f => f.id !== delFundId));
+            setDelFundId(null);
+        };
+
+        const Cats = [
+            {id:'veg',i:'🥦',l:'Veg'}, {id:'grocery',i:'🛒',l:'Grocery'},
+            {id:'med',i:'💊',l:'Med'}, {id:'petrol',i:'⛽',l:'Petrol'},
+            {id:'shop',i:'🛍️',l:'Shop'}, {id:'house',i:'🏠',l:'House'}
+        ];
+        
+        // Fix UTC Month Boundary Bug
+        const monthStr = getLocalMonthKey(viewDate);
+        
+        const totalAdded = funds.reduce((a,b)=>a+b.amount,0);
+        const totalAllTimeSpent = txs.reduce((a,b)=>a+b.amount,0);
+        const currentBalance = safeFloat(totalAdded - totalAllTimeSpent);
+
+        const spentMonth = safeFloat(txs.filter(t=>t.date.startsWith(monthStr)).reduce((a,b)=>a+b.amount,0));
+        const safeBudget = Math.max(0, Number(budget) || 0); // Harden budget read
+        const remainingBudget = safeFloat(safeBudget - spentMonth);
+        const pct = safeBudget > 0 ? Math.min((spentMonth/safeBudget)*100, 100) : 0;
+        
+        const radius = 22; 
+        const circumference = 2 * Math.PI * radius;
+        const dash = (pct / 100) * circumference;
+        const hue = Math.max(0, 120 - (pct * 1.2));
+        const budgetColor = `hsl(${hue}, 80%, 55%)`;
+
+        const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth()+1, 0).getDate();
+        const startDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+
+        const dailySums = useMemo(() => {
+            const map = {};
+            txs.filter(t => t.date.startsWith(monthStr)).forEach(t => {
+                map[t.date] = (map[t.date] || 0) + t.amount;
+            });
+            return map;
+        }, [txs, monthStr]);
+
+        const fundDates = useMemo(() => new Set(funds.map(f => f.date)), [funds]);
+
+        const { trendData, catData } = useMemo(() => {
+            const trend = [];
+            for(let i=5; i>=0; i--) {
+                const d = new Date(viewDate.getFullYear(), viewDate.getMonth() - i, 1);
+                // Fix UTC Month Boundary Bug
+                const mStr = getLocalMonthKey(d);
+                
+                const sum = txs.filter(t => t.date.startsWith(mStr)).reduce((a,b)=>a+b.amount,0);
+                const added = funds.filter(f => f.date.startsWith(mStr)).reduce((a,b)=>a+b.amount,0);
+                trend.push({ m: mStr, val: sum, added, lbl: d.toLocaleString('default',{month:'narrow'}) });
+            }
+            const maxVal = Math.max(...trend.map(t=>Math.max(t.val, t.added))) || 1;
+            const trendData = trend.map(t => ({ ...t, pct: (t.val/maxVal)*100, pctAdd: (t.added/maxVal)*100 }));
+
+            const currTxs = txs.filter(t => t.date.startsWith(monthStr));
+            const totalMonth = currTxs.reduce((a,b)=>a+b.amount,0) || 1;
+            const catData = Cats.map(c => {
+                const sum = currTxs.filter(t => t.category === c.id).reduce((a,b)=>a+b.amount,0);
+                return { ...c, total: safeFloat(sum), pct: (sum/totalMonth)*100, icon: c.i, label: c.l };
+            }).filter(c => c.total > 0).sort((a,b) => b.total - a.total);
+            return { trendData, catData };
+        }, [txs, funds, monthStr]);
+
+        return (
+            <div className="h-full flex flex-col animate-pop justify-center">
+                <div className="pt-10 px-6 pb-2 flex justify-between items-center z-20">
+                    <h1 className="text-2xl text-title tracking-widest animate-fade-in">WALLET</h1>
+                    <button onClick={onBack} className="bg-white/10 p-2 rounded-full text-slate-300"><Icon name="home" size={20}/></button>
+                </div>
+
+                <div className="px-6 flex items-center justify-between mb-2">
+                     <div className="flex bg-white/5 rounded-full p-1 items-center backdrop-blur-md">
+                         <button onClick={()=>changeMonth(-1)} className="p-2 text-slate-400 hover:text-white"><Icon name="chevronLeft" size={16}/></button>
+                         <span className="px-3 font-bold text-white text-sm transition-all">{viewDate.toLocaleString('default',{month:'long', year:'numeric'})}</span>
+                         <button onClick={()=>changeMonth(1)} className="p-2 text-slate-400 hover:text-white"><Icon name="chevronRight" size={16}/></button>
+                     </div>
+                     <button onClick={()=>openSheet('report')} className="bg-white/10 p-2 rounded-full text-slate-300 backdrop-blur-md active:scale-95 transition"><Icon name="chart" size={20}/></button>
+                </div>
+
+                <div className="px-6 mb-4 flex gap-3">
+                    <div className="glass-card p-3 rounded-[28px] relative overflow-hidden flex-1">
+                        <div className="flex justify-between items-center px-4 py-1">
+                             <div><p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Spent</p><h2 className="text-2xl font-mono font-bold text-white tracking-tighter">₹{spentMonth}</h2></div>
+                             
+                             <div className="w-16 h-16 relative cursor-pointer" onClick={()=>{openSheet('budget'); activate('budget','number')}}>
+                                <svg viewBox="0 0 50 50" className="budget-circle">
+                                    <circle cx="25" cy="25" r="22" className="budget-bg" />
+                                    <circle cx="25" cy="25" r="22" className="budget-progress" strokeDasharray={`${dash} ${circumference}`} style={{stroke: budgetColor}} />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-[9px] font-bold" style={{color: budgetColor}}>₹{remainingBudget}</span>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="px-6 mb-4">
+                    <div className="glass-card px-4 py-3 flex justify-between items-center">
+                        <div>
+                             <p className="text-[9px] text-slate-500 uppercase font-bold">Current Balance</p>
+                             <p className={`font-mono font-bold ${currentBalance < 0 ? 'text-alert' : 'text-primary'}`}>₹{currentBalance}</p>
+                        </div>
+                        <button onClick={()=>{setForm({id:null, amt:'', note:'', cat:'veg'}); openSheet('addFund'); activate('amt','number')}} className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[10px] font-bold text-white flex items-center gap-2 border border-white/5 transition">
+                            <Icon name="bank" size={14}/> Add Money
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-6 pb-32 no-scroll space-y-6">
+                    <div className="glass-card p-4">
+                        <div className={`cal-grid ${direction==='left'?'animate-slide-left':direction==='right'?'animate-slide-right':''}`}>
+                            {['S','M','T','W','T','F','S'].map(d=><div key={d} className="text-[10px] text-slate-500 font-bold text-center">{d}</div>)}
+                            {Array.from({length: startDay}).map((_,i)=><div key={'b'+i}></div>)}
+                            {Array.from({length: daysInMonth}).map((_,i)=>{
+                                const d = i+1; const iso = `${monthStr}-${String(d).padStart(2,'0')}`;
+                                const daySpent = dailySums[iso];
+                                const hasFund = fundDates.has(iso);
+                                return (
+                                    <div key={d} onClick={()=>setSelDate(iso)} className={`date-cell ${iso===selDate?'selected':iso===getLocalISO()?'today':''}`}>
+                                        <span>{d}</span>
+                                        {daySpent>0 && <span className="date-amt">₹{daySpent}</span>}
+                                        {hasFund && <div className="fund-dot"></div>}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="space-y-3">
+                            {txs.filter(t=>t.date===selDate).map(t => (
+                                <div key={t.id} className="glass-card p-4 flex justify-between items-center animate-slide-up">
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-2xl">{Cats.find(c=>c.id===t.category)?.i || '📦'}</div>
+                                        <div><div className="font-bold text-white">{t.title}</div><div className="text-xs text-slate-500 font-mono">{t.category}</div></div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div onClick={()=>{setForm({id:t.id, amt:t.amount, note:t.title, cat:t.category}); openSheet('edit'); activate('amt','number')}} className="font-mono font-bold text-white cursor-pointer active:scale-95 transition">₹{t.amount}</div>
+                                        <button onClick={()=>setDelId(t.id)} className="p-2 text-slate-600 hover:text-alert"><Icon name="trash" size={16}/></button>
+                                    </div>
+                                </div>
+                            ))}
+                            {txs.filter(t=>t.date===selDate).length === 0 && (
+                                <div className="text-center text-slate-600 py-4 text-xs italic border border-dashed border-white/10 rounded-xl">No expenses on {formatDateShort(selDate)}</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <button onClick={()=>{setForm({id:null, amt:'', note:'', cat:'veg'}); openSheet('add'); activate('amt','number')}} className="fab-fixed"><Icon name="plus" size={32}/></button>
+
+                <UnifiedModal 
+                   isOpen={!!sheetMode} onClose={()=>{
+                      // Harden Budget Sanitization
+                      if(sheetMode==='budget') setBudget(prev => Math.max(0, parseFloat(prev) || 0));
+                      setSheetMode(null);
+                   }} 
+                   title={sheetMode==='budget'?'Set Limit':sheetMode==='edit'?'Edit Expense':sheetMode==='report'?'Analytics':sheetMode==='addFund'?'Add Money':'Add Expense'}
+                   activeField={activeField} onKeyPress={handleKeyPress} primaryAction={()=>{ 
+                       if(sheetMode==='budget') {
+                           setBudget(prev => Math.max(0, parseFloat(prev) || 0));
+                           setSheetMode(null);
+                       } else saveTx(); 
+                   }}
+                   caps={caps} toggleCaps={()=>setCaps(!caps)}
+                   sheetMode={sheetMode}
+                >
+                    {sheetMode === 'report' ? (
+                        <div className="space-y-6 pt-2">
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="bg-white/5 p-3 rounded-2xl text-center"><p className="text-[9px] text-slate-500 font-bold uppercase">Added</p><p className="font-mono font-bold text-success text-sm">₹{totalAdded}</p></div>
+                                <div className="bg-white/5 p-3 rounded-2xl text-center"><p className="text-[9px] text-slate-500 font-bold uppercase">Spent</p><p className="font-mono font-bold text-alert text-sm">₹{totalAllTimeSpent}</p></div>
+                                <div className="bg-white/5 p-3 rounded-2xl text-center"><p className="text-[9px] text-slate-500 font-bold uppercase">Net</p><p className="font-mono font-bold text-white text-sm">₹{currentBalance}</p></div>
+                            </div>
+                            
+                            {/* Activity Trend - Justified: Useful for comparing income vs burn rate visually */}
+                            {trendData.some(d => d.val > 0 || d.added > 0) && (
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Activity Trend</h3>
+                                    <div className="flex items-end justify-between h-32 gap-2 px-2">
+                                        {trendData.map((d,i) => (
+                                            <div key={i} className="flex flex-col items-center flex-1 gap-2">
+                                                <div className="w-full bg-white/5 rounded-t-sm relative group h-full flex items-end justify-center">
+                                                    <div className="w-1.5 bg-success/40 rounded-full absolute bottom-0 -left-1" style={{height: `${d.pctAdd}%`}}></div>
+                                                    <div className="w-1.5 bg-primary/40 rounded-full absolute bottom-0 -right-1" style={{height: `${d.pct}%`}}></div>
+                                                </div>
+                                                <span className="text-[9px] text-slate-500 font-mono">{d.lbl}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <div>
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Money Added History</h3>
+                                <div className="space-y-2">
+                                    {funds.length === 0 ? <p className="text-xs text-slate-600 italic">No funds added yet</p> : 
+                                        [...funds].sort((a,b) => b.id - a.id).map(f => (
+                                            <div key={f.id} className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                                <div>
+                                                    <div className="text-xs font-bold text-white flex items-center gap-2">{formatDateShort(f.date)} <span className="text-slate-500 font-normal">· {f.note}</span></div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-mono font-bold text-success">+₹{f.amount}</span>
+                                                    <button onClick={()=>setDelFundId(f.id)} className="p-1 text-slate-500 hover:text-alert"><Icon name="trash" size={14}/></button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Spending Breakdown</h3>
+                                <div className="space-y-3">
+                                     {catData.length === 0 ? <p className="text-xs text-slate-600 italic text-center py-4">No data for this month</p> : 
+                                         catData.map(c => (
+                                         <div key={c.id}>
+                                            <div className="flex justify-between text-xs mb-1">
+                                                <span className="text-white flex items-center gap-2">{c.icon} {c.label}</span>
+                                                <span className="font-mono">₹{c.total}</span>
+                                            </div>
+                                            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                                <div className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full" style={{width: `${c.pct}%`}}></div>
+                                            </div>
+                                         </div>
+                                     ))}
+                                </div>
+                            </div>
+                        </div>
+                    ) : sheetMode==='budget' ? (
+                        <div className="text-center py-6">
+                            <div onClick={()=>activate('budget','number')} className={`text-6xl font-mono font-bold text-center py-4 ${activeField?.field==='budget'?'text-primary':'text-white'}`}>₹{budget}{activeField?.field==='budget' && <span className="input-cursor"></span>}</div>
+                        </div>
+                    ) : (
+                        <div className="space-y-5 pt-2">
+                             <div className="text-center">
+                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Amount</p>
+                                 <div onClick={()=>activate('amt','number')} className={`text-5xl font-mono font-bold text-center py-2 border-b border-white/10 ${activeField?.field==='amt'?'text-white':'text-primary'}`}><span className="text-2xl align-top">₹</span>{form.amt || '0'}{activeField?.field==='amt' && <span className="input-cursor"></span>}</div>
+                             </div>
+                             
+                             {sheetMode !== 'addFund' && (
+                                 <div className="grid grid-cols-6 gap-2">
+                                     {Cats.map(c => (
+                                         <button key={c.id} onClick={()=>setForm({...form, cat:c.id})} className={`aspect-square rounded-xl flex items-center justify-center text-xl border transition ${form.cat===c.id?'border-primary bg-primary/20 scale-105':'border-white/5 bg-white/5'}`}>{c.i}</button>
+                                     ))}
+                                 </div>
+                             )}
+
+                             <Input value={form.note} placeholder="Note" onClick={()=>activate('note','text')} active={activeField?.field==='note'} />
+                        </div>
+                    )}
+                </UnifiedModal>
+
+                {delId && <div className="sheet-overlay center-mode" onClick={()=>setDelId(null)}><div className="glass-card p-6 w-full max-w-xs text-center"><h2 className="text-lg font-bold text-white mb-4">Delete Expense?</h2><div className="flex gap-3"><button onClick={()=>setDelId(null)} className="flex-1 py-3 rounded-xl bg-white/10 text-white">Cancel</button><button onClick={deleteTx} className="flex-1 py-3 rounded-xl bg-alert text-white font-bold">Delete</button></div></div></div>}
+                
+                {delFundId && <div className="sheet-overlay center-mode" onClick={()=>setDelFundId(null)}><div className="glass-card p-6 w-full max-w-xs text-center"><h2 className="text-lg font-bold text-white mb-4">Delete Added Money?</h2><div className="flex gap-3"><button onClick={()=>setDelFundId(null)} className="flex-1 py-3 rounded-xl bg-white/10 text-white">Cancel</button><button onClick={deleteFund} className="flex-1 py-3 rounded-xl bg-alert text-white font-bold">Delete</button></div></div></div>}
+            </div>
+        )
+    };
+
+    const Launcher = ({ onSelect, toggleTheme, theme }) => (
+        <div className="h-full flex flex-col p-8 relative z-10 animate-pop">
+            <div className="mt-12 mb-auto text-center">
+                 <h1 className="text-5xl font-black text-white tracking-tighter leading-none">FINANCE<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary">SUITE</span></h1>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-center items-center w-full">
+                <div className="w-full max-w-xs space-y-4">
+                    <div onClick={()=>onSelect('rent')} className={`glass-card p-6 flex items-center gap-6 cursor-pointer hover:bg-white/5 active:scale-95 transition border-l-4 border-l-accent`}>
+                        <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center text-white shadow-lg"><Icon name="receipt" size={28}/></div>
+                        <div><h3 className="text-2xl font-bold text-white">RentBook</h3><p className="text-xs text-slate-400 uppercase tracking-widest mt-1">Properties</p></div>
+                    </div>
+                    <div onClick={()=>onSelect('wallet')} className={`glass-card p-6 flex items-center gap-6 cursor-pointer hover:bg-white/5 active:scale-95 transition border-l-4 border-l-primary`}>
+                        <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg"><Icon name="wallet" size={28}/></div>
+                        <div><h3 className="text-2xl font-bold text-white">Wallet</h3><p className="text-xs text-slate-400 uppercase tracking-widest mt-1">Tracker</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mb-8 flex justify-center">
+                 <div className="flex bg-white/10 p-1 rounded-full backdrop-blur-md shadow-2xl">
+                    <button onClick={()=>toggleTheme('cosmic')} className={`px-6 py-2 rounded-full text-xs font-bold transition ${theme==='cosmic'?'bg-accent text-white shadow-lg':'text-slate-400'}`}>COSMIC</button>
+                    <button onClick={()=>toggleTheme('knight')} className={`px-6 py-2 rounded-full text-xs font-bold transition ${theme==='knight'?'bg-white text-black shadow-lg':'text-slate-400'}`}>KNIGHT</button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const App = () => {
+      const [app, setApp] = useState('launcher');
+      const [theme, setTheme] = useState(() => safeParse('theme_pref', 'cosmic'));
+      
+      useEffect(() => { 
+          document.body.className = `theme-${theme}`; 
+          safeSet('theme_pref', theme);
+          const meta = document.getElementById('theme-color-meta');
+          if(meta) meta.setAttribute('content', theme === 'cosmic' ? '#050507' : '#000000');
+      }, [theme]);
+      
+      useEffect(() => {
+        const handlePop = (e) => {
+             if (e.state?.level) return;
+             setApp(e.state?.app || 'launcher');
+        };
+        const handleResume = () => { 
+            const route = window.history.state?.app;
+            if(route && route !== app) setApp(route);
+        };
+        
+        window.addEventListener('popstate', handlePop);
+        document.addEventListener('visibilitychange', handleResume);
+        if(window.history.state?.app) setApp(window.history.state.app);
+
+        return () => { 
+            window.removeEventListener('popstate', handlePop);
+            document.removeEventListener('visibilitychange', handleResume);
+        };
+      }, [app]);
+      
+      const open = (name) => { setApp(name); pushHistory({app:name}, name); }
+      
+      return (
+        <div className="w-full h-screen relative overflow-hidden bg-transparent font-sans flex items-center justify-center">
+           <div className="bg-ambience"></div><div className="orb orb-1"></div><div className="orb orb-2"></div>
+           <div className="w-full h-full max-w-md mx-auto relative">
+               {app==='launcher' && <Launcher onSelect={open} toggleTheme={setTheme} theme={theme} />}
+               {app==='rent' && <RentBook onBack={()=>open('launcher')} />}
+               {app==='wallet' && <Wallet onBack={()=>open('launcher')} />}
+           </div>
+        </div>
+      );
+    }
+
+    class ErrorBoundary extends React.Component {
+      constructor(props) { super(props); this.state = { hasError: false, err: null }; }
+      static getDerivedStateFromError(error) { return { hasError: true, err: error }; }
+      
+      handleReset = () => {
+          Object.keys(localStorage).forEach(k => {
+              if (k.startsWith('v50_') || k.startsWith('v49_') || k.startsWith('v48_') || k.startsWith('v47_') || k.startsWith('v46_')) {
+                  localStorage.removeItem(k);
+              }
+          });
+          location.reload();
+      }
+
+      render() {
+        if (this.state.hasError) {
+          return <div className="p-8 text-white text-center font-mono"><h1>App Crashed</h1><p className="text-xs text-red-400 mt-4">{this.state.err?.message}</p><button onClick={this.handleReset} className="mt-4 bg-white/10 px-4 py-2 rounded">Reset App</button></div>;
+        }
+        return this.props.children; 
+      }
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ErrorBoundary><App /></ErrorBoundary>);
+  </script>
+</body>
+</html>
