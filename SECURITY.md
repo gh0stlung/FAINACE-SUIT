@@ -17,7 +17,7 @@ Because this application runs **100% Client-Side** (Offline) with **Zero Backend
 However, if you discover a logic flaw in the data handling or LocalStorage encryption:
 
 1.  **Do NOT** open a public issue.
-2.  Email the developer directly at: `[Your Email Here]`
+2.  Email the developer directly at: `[wiseve6945@emaxasp.com]`
 3.  Include a proof-of-concept.
 
 We pledge to address critical logic flaws within 48 hours.
