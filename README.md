@@ -1,14 +1,22 @@
 <div align="center">
 
-![Header](https://capsule-render.vercel.app/api?type=waving&color=0:020617,100:0f172a&height=120&section=header&text=FINANCE%20SUITE&fontSize=35&fontColor=84cc16&animation=fadeIn)
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:020617,100:0f172a&height=220&section=header&text=FINANCE%20SUITE&fontSize=50&fontColor=84cc16&fontAlignY=35&animation=fadeIn" width="100%"/>
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Space+Grotesk&weight=600&size=18&pause=1000&color=FFFFFF&center=true&vCenter=true&width=500&lines=ZERO+BACKEND+%7C+OFFLINE+FIRST;RENTBOOK+%2F%2F+WALLET+%2F%2F+ANALYTICS)](https://git.io/typing-svg)
+<a href="https://git.io/typing-svg">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Space+Grotesk&weight=600&size=24&pause=1000&color=FFFFFF&center=true&vCenter=true&width=600&lines=ZERO+BACKEND+%7C+OFFLINE+FIRST;RENTBOOK+%2F%2F+WALLET+%2F%2F+ANALYTICS;SINGLE+FILE+FINANCE+OS" alt="Typing SVG" />
+</a>
 
-![Single File](https://img.shields.io/badge/ARCHITECTURE-SINGLE_FILE-0f172a?style=for-the-badge&logo=html5&logoColor=84cc16)
-![Local Storage](https://img.shields.io/badge/DATA-LOCAL_STORAGE-0f172a?style=for-the-badge&logo=database&logoColor=84cc16)
-![Zero Tracking](https://img.shields.io/badge/PRIVACY-ZERO_TRACKING-0f172a?style=for-the-badge&logo=torbrowser&logoColor=84cc16)
+<br/><br/>
 
-[![Launch App](https://img.shields.io/badge/LAUNCH_SYSTEM-OPEN_V43_PRO_>>-84cc16?style=for-the-badge&logoColor=black&labelColor=020617)](https://gh0stlung.github.io/FINANCE-SUITE-PRO/)
+![Architecture](https://img.shields.io/badge/ARCHITECTURE-SINGLE_FILE-0f172a?style=for-the-badge&logo=html5&logoColor=84cc16)
+![Data](https://img.shields.io/badge/DATA-LOCAL_STORAGE-0f172a?style=for-the-badge&logo=database&logoColor=84cc16)
+![Privacy](https://img.shields.io/badge/PRIVACY-ZERO_TRACKING-0f172a?style=for-the-badge&logo=torbrowser&logoColor=84cc16)
+
+<br/>
+
+<a href="https://gh0stlung.github.io/FINANCE-SUITE-PRO/">
+<img src="https://img.shields.io/badge/LAUNCH_SYSTEM-OPEN_V43_PRO_>>-84cc16?style=for-the-badge&logoColor=black&labelColor=020617&logoWidth=30"/>
+</a>
 
 </div>
 
@@ -93,7 +101,8 @@ Pure Black, High Contrast, Green Accents.
 
 <div align="center">
 
-**FINANCE SUITE PRO V43 // DESIGNED BY TORN¬D**
+<img src="https://www.google.com/search?q=https://capsule-render.vercel.app/api%3Ftype%3Dwaving%26color%3D0:84cc16,100:020617%26height%3D100%26section%3Dfooter" width="100%"/>
+<p style="margin-top: -40px; color: #666; font-size: 12px;">FINANCE SUITE PRO V43 // DESIGNED BY TORN¬D</p>
 
 </div>
 
