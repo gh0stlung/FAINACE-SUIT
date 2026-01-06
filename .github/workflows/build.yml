@@ -2,7 +2,7 @@ name: Build Android App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - name: Build APK from HTML
         uses: darkshredder/website-to-apk-action@v1
         with:
-          build-folder-path: 'public'
+          build-folder-path: '.'
           app-name: 'NeonDodge'
           output-folder-path: 'apk'
 
