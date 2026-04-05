@@ -1,9 +1,8 @@
 {
   "name": "Finance Suite",
-  "short_name": "FSuite",
+  "short_name": "Finance",
   "start_url": "/",
-  "display": "fullscreen",
-  "display_override": ["fullscreen", "standalone"],
+  "display": "standalone",
   "background_color": "#050507",
   "theme_color": "#050507",
   "icons": [
