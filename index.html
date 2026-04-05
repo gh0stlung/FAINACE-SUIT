@@ -89,6 +89,11 @@
     }
 
     * { box-sizing: border-box; }
+
+    html, body {
+    height: 100%;
+   }
+
     
     body { 
       background-color: var(--bg); 
@@ -104,6 +109,8 @@
       font-family: 'Outfit', sans-serif;
       width: 100%;
       min-height: 100vh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
     
     .noise-overlay { 
