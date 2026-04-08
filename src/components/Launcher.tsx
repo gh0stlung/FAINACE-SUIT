@@ -22,7 +22,7 @@ export const Launcher = React.memo(({ onSelect, toggleTheme, theme }: any) => {
     if (!onSelect) return null;
     return (
     <motion.div 
-        className="h-full flex flex-col p-8 relative z-10"
+        className="h-full flex flex-col p-3 pt-1 relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -38,14 +38,14 @@ export const Launcher = React.memo(({ onSelect, toggleTheme, theme }: any) => {
             </motion.button>
         </div>
 
-        <motion.div variants={itemVariants} className="mt-8 mb-auto text-center">
+        <motion.div variants={itemVariants} className="mt-2 mb-4 text-center">
              <h1 className="text-5xl font-black text-white tracking-tighter leading-none">
                  FINANCE<br/>
                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary">SUITE</span>
              </h1>
         </motion.div>
         
-        <div className="flex-1 flex flex-col justify-center items-center w-full">
+        <div className="flex-1 flex flex-col justify-start items-center w-full mt-2">
             <div className="w-full max-w-xs space-y-5">
                 <motion.div 
                     variants={itemVariants}
