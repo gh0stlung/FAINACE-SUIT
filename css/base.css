@@ -6,18 +6,21 @@
 }
 
 * { box-sizing: border-box; }
-html { padding-top: env(safe-area-inset-top); height: 100dvh; }
+html {
+  padding-top: env(safe-area-inset-top);
+  min-height: 100%;
+}
 body { 
   margin: 0; padding: 0;
-  height: 100dvh;
   -webkit-tap-highlight-color: transparent; 
-  overflow: hidden; 
+  overflow-y: auto;
+  overflow-x: hidden; 
   user-select: none; 
   -webkit-text-size-adjust: 100%; 
   touch-action: manipulation;
   font-family: 'Outfit', sans-serif;
   width: 100%;
-  min-height: 100dvh;
+  min-height: 100vh;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
