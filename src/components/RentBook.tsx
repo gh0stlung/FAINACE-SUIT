@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { motion } from 'motion/react';
 import { Icon } from './Icon';
 import { UnifiedModal } from './UnifiedModal';
 import { Input } from './Input';
@@ -224,44 +223,13 @@ export const RentBook = React.memo(({ onBack }: any) => {
   const dueCount = Object.values(tenantStatsMap as any).filter((s: any) => s.balance > 0).length;
 
   return (
-      <div className="h-full flex flex-col animate-pop justify-center relative overflow-hidden">
-          {/* BACKGROUND ORBS FOR PREMIUM FEEL */}
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-neon/5 blur-[100px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-lavender/5 blur-[100px] rounded-full pointer-events-none" />
-
-          <div className="pt-8 px-5 pb-2 flex justify-between items-center z-20 shrink-0">
-              <div className="flex items-center gap-3">
-                  {view !== 'dashboard' && (
-                      <motion.button 
-                        whileTap={{ scale: 0.9 }}
-                        onClick={()=>{setView('dashboard'); setSelId(null)}} 
-                        className="bg-white/5 p-2 rounded-xl border border-white/10 shadow-lg backdrop-blur-md"
-                      >
-                        <Icon name="chevronLeft" size={18}/>
-                      </motion.button>
-                  )}
-                  <div>
-                    <h1 className="text-xl text-title tracking-[0.2em] font-black">RENTBOOK</h1>
-                    <p className="text-[7px] text-muted-purple font-black uppercase tracking-[0.3em] opacity-60 ml-0.5">Management</p>
-                  </div>
+      <div className="h-full flex flex-col animate-pop justify-center relative">
+          <div className="pt-10 px-6 pb-2 flex justify-between items-center z-20 shrink-0">
+              <div className="flex items-center gap-4">
+                  {view !== 'dashboard' && <button onClick={()=>{setView('dashboard'); setSelId(null)}} className="bg-white/10 p-2 rounded-full"><Icon name="chevronLeft" size={24}/></button>}
+                  <h1 className="text-2xl text-title tracking-widest">RENTBOOK</h1>
               </div>
-              {view==='dashboard' ? (
-                <motion.button 
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onBack} 
-                    className="bg-white/5 px-4 py-1.5 rounded-xl text-[9px] font-black text-lavender border border-white/10 tracking-widest shadow-lg backdrop-blur-md uppercase"
-                >
-                    Exit
-                </motion.button>
-              ) : (
-                <motion.button 
-                    whileTap={{ scale: 0.9 }}
-                    onClick={()=>{setTenantForm({name:activeTenant.name, houseNo:activeTenant.houseNo, rent:activeTenant.baseRent, deposit:activeTenant.securityDeposit, rentDay:activeTenant.rentDay}); openSheet('editTenant'); activate('name','text')}} 
-                    className="p-2.5 bg-white/5 rounded-xl border border-white/10 shadow-lg backdrop-blur-md text-lavender"
-                >
-                    <Icon name="pencil" size={16}/>
-                </motion.button>
-              )}
+              {view==='dashboard' ? <button onClick={onBack} className="bg-white/10 px-4 py-2 rounded-full text-xs font-bold text-slate-300">EXIT</button> : <button onClick={()=>{setTenantForm({name:activeTenant.name, houseNo:activeTenant.houseNo, rent:activeTenant.baseRent, deposit:activeTenant.securityDeposit, rentDay:activeTenant.rentDay}); openSheet('editTenant'); activate('name','text')}} className="p-2 bg-white/10 rounded-full"><Icon name="pencil" size={20}/></button>}
           </div>
 
           {view === 'dashboard' ? (
@@ -291,16 +259,7 @@ export const RentBook = React.memo(({ onBack }: any) => {
               />
           )}
           
-          {view==='dashboard' && (
-            <motion.button 
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={()=>{setTenantForm({name:'',houseNo:'',rent:'',deposit:'',rentDay:'1'}); openSheet('addTenant'); activate('name','text')}} 
-                className="fab-fixed bg-purple-gradient shadow-xl shadow-purple-900/40 border border-white/10 w-14 h-14"
-            >
-                <Icon name="plus" size={28}/>
-            </motion.button>
-          )}
+          {view==='dashboard' && <button onClick={()=>{setTenantForm({name:'',houseNo:'',rent:'',deposit:'',rentDay:'1'}); openSheet('addTenant'); activate('name','text')}} className="fab-fixed"><Icon name="plus" size={32}/></button>}
 
           <UnifiedModal 
               key={sheetMode || 'none'}
@@ -313,84 +272,55 @@ export const RentBook = React.memo(({ onBack }: any) => {
           >
               {(sheetMode === 'addTenant' || sheetMode === 'editTenant') && (
                   <div className="space-y-2">
-                      <div>
-                        <p className="text-[8px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Tenant Information</p>
-                        <Input value={tenantForm.name} placeholder="Full Name" onClick={()=>activate('name','text')} active={activeField?.field==='name'} autoFocus={activeField?.field==='name'}/>
+                      <Input value={tenantForm.name} placeholder="Name" onClick={()=>activate('name','text')} active={activeField?.field==='name'} autoFocus={activeField?.field==='name'}/>
+                      <div className="modal-row">
+                          <Input value={tenantForm.houseNo} placeholder="House No" onClick={()=>activate('houseNo','text')} active={activeField?.field==='houseNo'}/>
+                          <Input value={tenantForm.rentDay} placeholder="Due Day" onClick={()=>activate('rentDay','number')} active={activeField?.field==='rentDay'}/>
                       </div>
-                      <div className="modal-row gap-2">
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">House No</p>
-                            <Input value={tenantForm.houseNo} placeholder="e.g. A-101" onClick={()=>activate('houseNo','text')} active={activeField?.field==='houseNo'}/>
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Due Day</p>
-                            <Input value={tenantForm.rentDay} placeholder="1-31" onClick={()=>activate('rentDay','number')} active={activeField?.field==='rentDay'}/>
-                          </div>
-                      </div>
-                      <div className="modal-row gap-2">
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Monthly Rent</p>
-                            <Input value={tenantForm.rent} placeholder="₹" onClick={()=>activate('rent','number')} active={activeField?.field==='rent'} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Security</p>
-                            <Input value={tenantForm.deposit} placeholder="₹" onClick={()=>activate('deposit','number')} active={activeField?.field==='deposit'}/>
-                          </div>
+                      <div className="modal-row">
+                          <Input value={tenantForm.rent} placeholder="Rent ₹" onClick={()=>activate('rent','number')} active={activeField?.field==='rent'} />
+                          <Input value={tenantForm.deposit} placeholder="Deposit" onClick={()=>activate('deposit','number')} active={activeField?.field==='deposit'}/>
                       </div>
                   </div>
               )}
               {sheetMode === 'bill' && (
-                  <div className="space-y-3">
-                      <div className="flex justify-between items-center bg-white/5 p-2 rounded-xl mb-1 border border-white/5 shadow-inner">
-                           <motion.button whileTap={{ scale: 0.8 }} onClick={()=>{let [y, m]: any = billForm.monthISO.split('-'); m--; if(m<1){m=12;y--}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}} className="p-1 bg-white/5 rounded-lg"><Icon name="chevronLeft" size={14}/></motion.button>
-                           <span className="font-black text-white text-[10px] uppercase tracking-[0.2em]">{formatMonth(billForm.monthISO)}</span>
-                           <motion.button whileTap={{ scale: 0.8 }} onClick={()=>{let [y, m]: any = billForm.monthISO.split('-'); m++; if(m>12){m=1;y++}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}} className="p-1 bg-white/5 rounded-lg"><Icon name="chevronRight" size={14}/></motion.button>
+                  <div className="space-y-2">
+                      <div className="flex justify-between items-center bg-white/5 p-2 rounded-xl mb-1">
+                           <button onClick={()=>{let [y, m]: any = billForm.monthISO.split('-'); m--; if(m<1){m=12;y--}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}} className="p-1"><Icon name="chevronLeft" size={18}/></button>
+                           <span className="font-bold text-white text-sm">{formatMonth(billForm.monthISO)}</span>
+                           <button onClick={()=>{let [y, m]: any = billForm.monthISO.split('-'); m++; if(m>12){m=1;y++}; setBillForm({...billForm, monthISO:`${y}-${String(m).padStart(2,'0')}`})}} className="p-1"><Icon name="chevronRight" size={18}/></button>
                       </div>
-                      <div className="modal-row gap-2">
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Old Reading</p>
-                            <Input value={billForm.oldUnit} placeholder="Units" onClick={()=>activate('oldUnit','number')} active={activeField?.field==='oldUnit'} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">New Reading</p>
-                            <Input value={billForm.newUnit} placeholder="Units" onClick={()=>activate('newUnit','number')} active={activeField?.field==='newUnit'} autoFocus={activeField?.field==='newUnit'}/>
-                          </div>
+                      <div className="modal-row">
+                          <Input value={billForm.oldUnit} placeholder="Old Reading" onClick={()=>activate('oldUnit','number')} active={activeField?.field==='oldUnit'} />
+                          <Input value={billForm.newUnit} placeholder="New Reading" onClick={()=>activate('newUnit','number')} active={activeField?.field==='newUnit'} autoFocus={activeField?.field==='newUnit'}/>
                       </div>
-                      <div>
-                        <p className="text-[7px] text-muted-purple font-black uppercase tracking-widest mb-1 ml-1">Adjustment (Optional)</p>
-                        <Input value={billForm.manualBill} placeholder="₹" onClick={()=>activate('manualBill','number')} active={activeField?.field==='manualBill'}/>
-                      </div>
+                      <Input value={billForm.manualBill} placeholder="Manual Elec (Opt)" onClick={()=>activate('manualBill','number')} active={activeField?.field==='manualBill'}/>
                   </div>
               )}
               {sheetMode === 'pay' && (
-                  <div className="space-y-4 pt-1">
-                      <div className="text-center bg-white/5 p-4 rounded-[24px] border border-white/5 shadow-inner relative overflow-hidden">
-                          <div className="absolute top-0 left-0 w-full h-full bg-primary-neon/5 blur-[30px] pointer-events-none" />
-                          <p className="text-[8px] font-black text-muted-purple uppercase tracking-[0.3em] mb-1 relative z-10">Collection Amount</p>
-                          <div onClick={()=>activate('amount','number')} className={`text-4xl font-mono font-black text-center py-1 relative z-10 ${activeField?.field==='amount' ? 'text-white' : 'text-lavender'}`}>
-                            <span className="text-xl align-top mr-1 opacity-60">₹</span>{payForm.amount || '0'}{activeField?.field==='amount' && <span className="input-cursor bg-primary-neon"/>}
-                          </div>
+                  <div className="space-y-4 pt-2">
+                      <div className="text-center">
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Amount</p>
+                          <div onClick={()=>activate('amount','number')} className={`text-4xl font-mono font-bold text-center py-2 border-b border-white/10 ${activeField?.field==='amount' ? 'text-white' : 'text-primary'}`}><span className="text-xl align-top mr-1">₹</span>{payForm.amount || '0'}{activeField?.field==='amount' && <span className="input-cursor"/>}</div>
                       </div>
 
-                      <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5 shadow-inner">
+                      <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
                           <button 
                              onClick={() => setPayForm({...payForm, method: 'cash'})}
-                             className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${payForm.method === 'cash' ? 'bg-white/10 text-white shadow-lg border border-white/10' : 'text-slate-500 opacity-60'}`}
+                             className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition ${payForm.method === 'cash' ? 'bg-white/20 text-white' : 'text-slate-500'}`}
                           >
                               Cash
                           </button>
                           <button 
                              onClick={() => setPayForm({...payForm, method: 'online'})}
-                             className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${payForm.method === 'online' ? 'bg-white/10 text-white shadow-lg border border-white/10' : 'text-slate-500 opacity-60'}`}
+                             className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition ${payForm.method === 'online' ? 'bg-white/20 text-white' : 'text-slate-500'}`}
                           >
                               Online
                           </button>
                       </div>
 
-                      <div onClick={()=>{setOverrideView('calendar')}} className="flex items-center justify-center gap-2 text-white py-3 bg-white/5 rounded-xl border border-white/10 active:scale-95 transition-all cursor-pointer shadow-lg group">
-                          <Icon name="calendar" size={16} className="text-muted-purple group-hover:text-lavender transition-colors"/> 
-                          <span className="text-[10px] font-black uppercase tracking-widest">{formatDateShort(payForm.date)}</span>
-                          <span className="text-[8px] text-muted-purple font-bold uppercase tracking-widest opacity-60">(Change)</span>
+                      <div onClick={()=>{setOverrideView('calendar')}} className="flex items-center justify-center gap-2 text-white py-3 bg-white/5 rounded-xl border border-white/5 active:scale-95 transition cursor-pointer">
+                          <Icon name="calendar" size={16}/> {formatDateShort(payForm.date)} <span className="text-xs text-slate-400">(Tap to change)</span>
                       </div>
                   </div>
               )}

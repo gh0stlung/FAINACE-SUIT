@@ -29,7 +29,7 @@ export const Input = React.memo(({ value, placeholder, onChange = () => {}, type
                 placeholder={placeholder}
                 autoFocus={autoFocus}
                 readOnly={!!onClick}
-                className={`custom-input w-full bg-white/5 border rounded-xl px-3 py-2.5 text-white placeholder:text-slate-500 focus:outline-none transition ${active ? 'border-primary ring-1 ring-primary/30' : 'border-white/10 focus:border-primary'}`}
+                className={`custom-input w-full bg-white/5 border rounded-2xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none transition ${active ? 'border-primary ring-1 ring-primary/30' : 'border-white/10 focus:border-primary'}`}
             />
             {active && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)] animate-pulse" />}
         </div>

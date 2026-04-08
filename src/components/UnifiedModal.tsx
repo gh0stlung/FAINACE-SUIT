@@ -77,25 +77,25 @@ export const UnifiedModal = React.memo(({ isOpen, onClose, title, children, acti
                     paddingBottom: keyboardHeight > 0 ? '10px' : 'var(--safe-bottom)'
                 }}
             >
-                <div className="flex justify-between items-center p-2 border-b border-white/5 shrink-0">
-                    <h2 className="text-sm font-black text-white pl-2 tracking-widest uppercase">{title}</h2>
+                <div className="flex justify-between items-center p-3 border-b border-white/5 shrink-0">
+                    <h2 className="text-base font-bold text-white pl-2 tracking-tight">{title}</h2>
                     <motion.button 
                         whileTap={{ scale: 0.9 }}
                         onClick={onClose} 
-                        className="p-1 bg-white/5 rounded-full text-slate-400"
+                        className="p-1.5 bg-white/5 rounded-full text-slate-400"
                     >
-                        <Icon name="x" size={16}/>
+                        <Icon name="x" size={18}/>
                     </motion.button>
                 </div>
                 <div className="sheet-body no-scroll">{children}</div>
                 {!isReport && activeField && primaryAction && (
-                    <div className="px-4 pb-2 pt-1.5 shrink-0 flex justify-end border-t border-white/5 bg-[#0a0a0b]">
+                    <div className="px-4 pb-3 pt-2 shrink-0 flex justify-end border-t border-white/5 bg-[#0a0a0b]">
                         <motion.button 
                             whileTap={{ scale: 0.96 }}
                             onClick={primaryAction} 
-                            className="bg-primary-gradient text-white px-5 py-1.5 rounded-full text-[11px] font-black tracking-widest shadow-lg shadow-primary/20 border border-white/10 active:brightness-95 transition-all duration-200 uppercase"
+                            className="bg-primary-gradient text-white px-6 py-2 rounded-full text-sm font-extrabold tracking-wide shadow-lg shadow-primary/20 border border-white/10 active:brightness-95 transition-all duration-200"
                         >
-                            Save
+                            SAVE
                         </motion.button>
                     </div>
                 )}

@@ -446,9 +446,9 @@ export const Wallet = React.memo(({ onBack }: any) => {
     }, [txs, funds, monthStr]);
 
     return (
-        <div className="relative animate-pop h-full flex flex-col">
+        <div className="h-full relative animate-pop">
             <div className="noise-overlay" />
-            <div className="flex-1 overflow-y-auto no-scroll flex flex-col pb-24 pt-2 px-4 relative z-10">
+            <div className="h-full overflow-y-auto no-scroll flex flex-col pb-20 pt-2 px-4 relative z-10">
                 <div className="pb-1 flex justify-between items-center z-20 shrink-0">
                     <h1 className="text-xl text-title tracking-widest animate-fade-in">WALLET</h1>
                     <motion.button 
