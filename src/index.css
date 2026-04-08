@@ -51,7 +51,7 @@ html {
 padding-top: env(safe-area-inset-top);
 }
 html, body {
-  min-height: 100%;
+height: 100%;
 }
 
 
@@ -59,8 +59,7 @@ body {
   background: var(--bg-gradient); 
   color: var(--text-main); 
   -webkit-tap-highlight-color: transparent; 
-  overflow-y: auto;
-  overflow-x: hidden; 
+  overflow: hidden; 
   user-select: none; 
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
   margin: 0; 
@@ -433,8 +432,6 @@ body.theme-knight .text-title {
 
 .text-lavender { color: #D9B8D9; }
 .text-muted-purple { color: #B38FB3; }
-.text-neon-purple { color: #D9B8D9; text-shadow: 0 0 10px rgba(217, 184, 217, 0.5); }
 .bg-deep-purple { background-color: #201030; }
 .border-deep-purple { border-color: #201030; }
 .bg-purple-gradient { background: linear-gradient(135deg, #B38FB3 0%, #201030 100%); }
-.shadow-purple { shadow: 0 8px 32px rgba(32, 16, 48, 0.4); }

@@ -81,9 +81,9 @@ function AppContent() {
   }, []);
   
   return (
-    <div className="w-full min-h-dvh relative overflow-hidden bg-transparent font-sans flex justify-start">
+    <div className="w-full h-dvh relative overflow-hidden bg-transparent font-sans flex items-center justify-center">
        <div className="bg-ambience"/> <div className="orb orb-1"/> <div className="orb orb-2"/>
-       <div className="w-full max-w-md mx-auto pt-3">
+       <div className="w-full h-full max-w-md mx-auto relative">
            {app === 'launcher' && Launcher && <Launcher onSelect={open} toggleTheme={setTheme} theme={theme}/>}
            {app === 'rent' && RentBook && <RentBook onBack={() => open('launcher')}/>}
            {app === 'wallet' && Wallet && <Wallet onBack={() => open('launcher')}/>}
