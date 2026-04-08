@@ -1,0 +1,35 @@
+body.theme-cosmic { 
+    --bg: #050507; 
+    --surface: #0e0e11; 
+    --glass-bg: rgba(22, 22, 26, 0.6); 
+    --glass-border: rgba(255, 255, 255, 0.08); 
+    --primary: #cce35a; 
+    --accent: #604090; 
+    --text-main: #e8e8e8; 
+    --orb-opacity: 0.12; 
+    --shadow-color: rgba(0,0,0,0.5); 
+}
+
+body.theme-knight { 
+    --bg: #000000; 
+    --surface: #0a0a0a; 
+    --glass-bg: #111111; 
+    --glass-border: #262626; 
+    --primary: #00e676; 
+    --accent: #222;
+    --text-main: #ffffff; 
+    --orb-opacity: 0; 
+    --shadow-color: rgba(0,0,0,0); 
+}
+
+body { 
+  background-color: var(--bg); 
+  color: var(--text-main); 
+  transition: background 0.3s ease; 
+}
+
+body.theme-knight .bg-ambience { opacity: 0; }
+body.theme-knight .glass-card { backdrop-filter: none; background: #111; }
+body.theme-knight .text-title { 
+  background: none; -webkit-text-fill-color: white; color: white;
+}
