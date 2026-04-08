@@ -1,26 +1,85 @@
-# Security Policy
+🔐 Security Policy
 
-## Supported Versions
+📦 Supported Versions
 
-Since FINANCE SUITE PRO is a "Single File" application, we only support the latest downloadable version.
+We only support the latest release of FINANCE SUITE.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| v43.x   | :white_check_mark: |
-| v42.x   | :x:                |
-| < v40   | :x:                |
+Version| Supported
+Latest| ✅
+Older| ❌
 
-## Reporting a Vulnerability
+---
 
-Because this application runs **100% Client-Side** (Offline) with **Zero Backend**, most traditional server-side vulnerabilities do not apply.
+🧠 Security Model
 
-However, if you discover a logic flaw in the data handling or LocalStorage encryption:
+FINANCE SUITE is a local-first, client-side application.
 
-1.  **Do NOT** open a public issue.
-2.  Email the developer directly at: `[wiseve6945@emaxasp.com]`
-3.  Include a proof-of-concept.
+- No backend
+- No cloud storage
+- No external API dependency
+- All data stored in browser ("localStorage")
 
-We pledge to address critical logic flaws within 48 hours.
+This removes most traditional risks like:
 
-### ⚠️ Disclaimer
-This software is provided "as is". The developer is not responsible for financial data loss caused by browser cache clearing or user error.
+- Server breaches
+- Database leaks
+- API exploits
+
+---
+
+⚠️ Real Risks (Important)
+
+Because data is stored locally, the main risks are:
+
+- Device compromise (malware, shared device)
+- Browser data clearing (cache / storage wipe)
+- Manual tampering via developer tools
+- No built-in encryption layer
+
+👉 This is a user-controlled system, not a managed cloud service.
+
+---
+
+🚨 Reporting Vulnerabilities
+
+If you discover a vulnerability (logic flaw, data corruption, UI exploit):
+
+1. open a public issue
+2. Include:
+   - Clear description
+   - Steps to reproduce
+   - Screenshots / proof
+
+⏱ Expected response: within 48 hours
+
+---
+
+🛡️ Recommended User Practices
+
+- Use a personal device only
+- Avoid using in public/shared browsers
+- Backup data manually (export or browser backup)
+- Do not modify storage manually unless you understand the structure
+
+---
+
+⚖️ Disclaimer
+
+This software is provided "as is".
+
+- The developer is not responsible for:
+  - Data loss due to browser clearing
+  - Device-level compromise
+  - User misconfiguration
+
+You are fully responsible for managing and securing your data.
+
+---
+
+🔮 Future Security Enhancements (Planned)
+
+- Optional local encryption layer
+- Export/import with validation
+- Data integrity checks
+
+---
