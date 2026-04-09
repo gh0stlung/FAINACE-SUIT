@@ -4,7 +4,7 @@ import { Icon } from './Icon';
 
 export const Settings = React.memo(({ onBack, toggleTheme, theme }: any) => {
     return (
-        <div className="h-full flex flex-col p-8 relative z-10 animate-pop">
+        <div className="h-full flex flex-col p-8 pt-[calc(var(--safe-top)+2rem)] pb-[calc(var(--safe-bottom)+2rem)] relative z-10 animate-pop">
             <div className="flex justify-between items-center mb-12">
                 <h1 className="text-3xl font-black text-white tracking-tighter">SETTINGS</h1>
                 <motion.button 

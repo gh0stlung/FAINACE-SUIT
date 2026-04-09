@@ -15,7 +15,7 @@ export const RentDashboard = React.memo(({ tenants, tenantStatsMap, openDetails,
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 pb-32 no-scroll z-10 pt-2">
+            <div className="flex-1 overflow-y-auto px-5 pb-[calc(var(--safe-bottom)+8rem)] no-scroll z-10 pt-2">
                 <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-3 ml-1">Tenants</h3>
                 {tenants.map((t) => {
                     const stats = tenantStatsMap[t.id] || {balance:0};
@@ -64,7 +64,7 @@ export const RentDetails = React.memo(({
     if (!activeTenant) return <div className="p-8 text-center text-slate-500">Loading tenant details...</div>;
     
     return (
-        <div className="flex-1 overflow-y-auto px-5 pb-32 no-scroll z-10 pt-2">
+        <div className="flex-1 overflow-y-auto px-5 pb-[calc(var(--safe-bottom)+8rem)] no-scroll z-10 pt-2">
             <div className="animate-slide-up space-y-4 pb-12">
                 <div className="glass-card p-5 bg-gradient-to-b from-white/10 to-transparent relative backdrop-blur-xl border-b border-white/10">
                     <div className="text-center mb-4">

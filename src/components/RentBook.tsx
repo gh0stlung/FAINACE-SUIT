@@ -223,8 +223,8 @@ export const RentBook = React.memo(({ onBack }: any) => {
   const dueCount = Object.values(tenantStatsMap as any).filter((s: any) => s.balance > 0).length;
 
   return (
-      <div className="h-full flex flex-col animate-pop justify-center relative">
-          <div className="pt-10 px-6 pb-2 flex justify-between items-center z-20 shrink-0">
+      <div className="h-screen overflow-hidden flex flex-col animate-pop relative">
+          <div className="pt-[calc(var(--safe-top)+1rem)] px-6 pb-2 flex justify-between items-center z-20 shrink-0">
               <div className="flex items-center gap-4">
                   {view !== 'dashboard' && <button onClick={()=>{setView('dashboard'); setSelId(null)}} className="bg-white/10 p-2 rounded-full"><Icon name="chevronLeft" size={24}/></button>}
                   <h1 className="text-2xl text-title tracking-widest">RENTBOOK</h1>
@@ -259,7 +259,7 @@ export const RentBook = React.memo(({ onBack }: any) => {
               />
           )}
           
-          {view==='dashboard' && <button onClick={()=>{setTenantForm({name:'',houseNo:'',rent:'',deposit:'',rentDay:'1'}); openSheet('addTenant'); activate('name','text')}} className="fab-fixed"><Icon name="plus" size={32}/></button>}
+          {view==='dashboard' && <button onClick={()=>{setTenantForm({name:'',houseNo:'',rent:'',deposit:'',rentDay:'1'}); openSheet('addTenant'); activate('name','text')}} className="fab-fixed fixed bottom-8 right-6 z-50"><Icon name="plus" size={24}/></button>}
 
           <UnifiedModal 
               key={sheetMode || 'none'}

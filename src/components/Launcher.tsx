@@ -22,7 +22,7 @@ export const Launcher = React.memo(({ onSelect, toggleTheme, theme }: any) => {
     if (!onSelect) return null;
     return (
     <motion.div 
-        className="h-full flex flex-col p-8 relative z-10"
+        className="h-full flex flex-col p-8 pt-[calc(var(--safe-top)+2rem)] pb-[calc(var(--safe-bottom)+2rem)] relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="show"

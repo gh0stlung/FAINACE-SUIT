@@ -339,44 +339,41 @@ export const Wallet = React.memo(({ onBack }: any) => {
     const currentBalance = safeFloat(totalAdded - totalAllTimeSpent);
 
     // REAL-TIME WALLET (All Time)
-    const allCashIncome = funds.filter(f => f.method === 'cash').reduce((a,b) => a + b.amount, 0);
-    const allCashExpense = txs.filter(t => t.method === 'cash').reduce((a,b) => a + b.amount, 0);
-    const cashBalance = Math.max(0, safeFloat(allCashIncome - allCashExpense));
+    const cashBalance = useMemo(() => {
+        const allCashIncome = funds.filter(f => f.method === 'cash').reduce((a,b) => a + b.amount, 0);
+        const allCashExpense = txs.filter(t => t.method === 'cash').reduce((a,b) => a + b.amount, 0);
+        return safeFloat(allCashIncome - allCashExpense);
+    }, [funds, txs]);
 
-    const allOnlineIncome = funds.filter(f => f.method !== 'cash').reduce((a,b) => a + b.amount, 0);
-    const allOnlineExpense = txs.filter(t => t.method !== 'cash').reduce((a,b) => a + b.amount, 0);
-    const onlineBalance = safeFloat(allOnlineIncome - allOnlineExpense);
-    const totalBalance = safeFloat(cashBalance + onlineBalance);
+    const onlineBalance = useMemo(() => {
+        const allOnlineIncome = funds.filter(f => f.method !== 'cash').reduce((a,b) => a + b.amount, 0);
+        const allOnlineExpense = txs.filter(t => t.method !== 'cash').reduce((a,b) => a + b.amount, 0);
+        return safeFloat(allOnlineIncome - allOnlineExpense);
+    }, [funds, txs]);
+
+    const totalBalance = useMemo(() => safeFloat(cashBalance + onlineBalance), [cashBalance, onlineBalance]);
 
     // MONTHLY ANALYTICS (Filtered by monthStr)
     const monthlyTotalIncome = safeFloat(funds.filter(f => f.date.startsWith(monthStr)).reduce((a,b) => a + b.amount, 0));
     const monthlyTotalExpense = safeFloat(txs.filter(t => t.date.startsWith(monthStr)).reduce((a,b) => a + b.amount, 0));
     
-    const monthlyCashIncome = funds.filter(f => f.date.startsWith(monthStr) && f.method === 'cash').reduce((a,b) => a + b.amount, 0);
-    const monthlyCashExpense = txs.filter(t => t.date.startsWith(monthStr) && t.method === 'cash').reduce((a,b) => a + b.amount, 0);
-    const monthlyRemainingCash = Math.max(0, safeFloat(monthlyCashIncome - monthlyCashExpense));
-    
     const spentMonth = monthlyTotalExpense;
 
-    // Live Cash Meter Logic (Monthly)
-    const initialMonthlyCash = monthlyCashIncome || 1; 
-    const cashPercent = Math.min(100, Math.max(0, (monthlyRemainingCash / initialMonthlyCash) * 100));
+    // Budget Meter Logic (Monthly)
+    const budgetAmount = parseFloat(budget) || 5000;
+    const remainingBudget = budgetAmount - spentMonth;
+    const isOverBudget = remainingBudget < 0;
+    const budgetPercent = Math.min(100, Math.max(0, (spentMonth / budgetAmount) * 100));
     
     const radius = 22; 
     const circumference = 2 * Math.PI * radius;
-    const dash = (cashPercent / 100) * circumference;
-    // Premium Green Gradient Fill
-    const meterColor = cashPercent > 20 ? '#22c55e' : '#ef4444'; 
+    const dash = (budgetPercent / 100) * circumference;
 
     // Dynamic Balance for Main View (Legacy support for displayBalance if needed elsewhere)
     const now = new Date();
     const isCurrentMonth = getLocalMonthKey(now) === monthStr;
     const displayBalance = isCurrentMonth ? currentBalance : getBalanceAtEnd(monthStr);
     const balanceLabel = isCurrentMonth ? "Current Balance" : `Balance in ${viewDate.toLocaleString('default', { month: 'short' })}`;
-
-    // Carried from last month for the SELECTED month
-    const firstOfSelectedMonth = monthStr + '-01';
-    const carriedToSelectedMonth = getBalanceBefore(firstOfSelectedMonth);
     
     const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth()+1, 0).getDate();
     const startDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
@@ -446,9 +443,9 @@ export const Wallet = React.memo(({ onBack }: any) => {
     }, [txs, funds, monthStr]);
 
     return (
-        <div className="h-full relative animate-pop">
+        <div className="h-screen overflow-hidden flex flex-col relative animate-pop">
             <div className="noise-overlay" />
-            <div className="h-full overflow-y-auto no-scroll flex flex-col pb-20 pt-2 px-4 relative z-10">
+            <div className="flex-1 overflow-y-auto no-scroll flex flex-col pb-20 pt-2 px-4 relative z-10">
                 <div className="pb-1 flex justify-between items-center z-20 shrink-0">
                     <h1 className="text-xl text-title tracking-widest animate-fade-in">WALLET</h1>
                     <motion.button 
@@ -499,73 +496,57 @@ export const Wallet = React.memo(({ onBack }: any) => {
                    </div>
                 </div>
 
-                {/* MONTHLY ANALYTICS SECTION */}
+                {/* MONTHLY SECTION */}
                 <div className="mb-4">
                    <div className="flex items-center gap-2 mb-1.5 px-1">
                        <div className="h-px flex-1 bg-white/10"/>
-                       <span className="text-[9px] text-neon font-black uppercase tracking-[0.15em] opacity-60">Analytics</span>
+                       <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.15em] opacity-60">Monthly</span>
                        <div className="h-px flex-1 bg-white/10"/>
                    </div>
                    
-                   <div className="glass-card p-4 rounded-[24px] relative overflow-hidden border-white/10 shadow-2xl">
-                       <div className="flex justify-between items-center gap-2">
-                              <div className="flex-1">
-                                <p className="text-[9px] text-teal uppercase tracking-[0.1em] font-black mb-0.5 opacity-90">Expense This Month</p>
-                                <h2 className="text-2xl font-mono font-black text-white tracking-tighter leading-none">₹<AnimatedNumber value={monthlyTotalExpense}/></h2>
-                                <div className="mt-2 space-y-1">
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-1 h-1 rounded-full bg-neon" style={{ backgroundColor: 'var(--primary-neon)' }}/>
-                                        <span className="text-[10px] font-bold text-neon">Income: ₹{monthlyTotalIncome}</span>
-                                    </div>
-                                    <p className="text-[8px] text-teal font-bold ml-2.5 opacity-80">
-                                        {carriedToSelectedMonth >= 0 ? '+' : ''}₹{carriedToSelectedMonth} from last month
-                                    </p>
+                   <div className="glass-card p-4 rounded-[24px] border-white/5 shadow-xl bg-gradient-to-b from-white/[0.02] to-transparent">
+                       <div className="flex justify-between items-center">
+                              <div className="space-y-3">
+                                <div>
+                                    <p className="text-[9px] text-slate-400 uppercase tracking-[0.1em] font-black mb-0.5 opacity-90">Monthly Expense</p>
+                                    <h2 className="text-xl font-mono font-black text-white tracking-tighter leading-none">₹<AnimatedNumber value={monthlyTotalExpense}/></h2>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] text-slate-400 uppercase tracking-[0.1em] font-black mb-0.5 opacity-90">Monthly Income</p>
+                                    <h2 className="text-xl font-mono font-black text-emerald-400 tracking-tighter leading-none">₹<AnimatedNumber value={monthlyTotalIncome}/></h2>
                                 </div>
                              </div>
                              
-                             <div className="flex flex-col items-center shrink-0">
+                             <div className="flex flex-col items-center shrink-0 cursor-pointer" onClick={() => openSheet('budget')}>
                                 <div className="w-20 h-20 relative">
-                                   <div className="absolute inset-0 rounded-full bg-black/40 backdrop-blur-sm m-1 border border-white/5 shadow-inner" />
+                                   <div className="absolute inset-0 rounded-full bg-black/20 m-1 border border-white/5 shadow-inner" />
                                    <svg viewBox="0 0 50 50" className="budget-circle transform -rotate-90 relative z-10 overflow-visible">
                                        <defs>
-                                           <linearGradient id="meterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                               <stop offset="0%" stopColor={cashPercent > 20 ? 'var(--primary-neon)' : '#fb7185'} />
-                                               <stop offset="100%" stopColor={cashPercent > 20 ? 'var(--accent-teal)' : '#f43f5e'} />
+                                           <linearGradient id="budgetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                               <stop offset="0%" stopColor={isOverBudget ? '#f43f5e' : '#e2e8f0'} />
+                                               <stop offset="100%" stopColor={isOverBudget ? '#be123c' : '#94a3b8'} />
                                            </linearGradient>
                                        </defs>
-                                       <circle cx="25" cy="25" r="22" className="budget-bg" stroke="rgba(255,255,255,0.05)" strokeWidth="3.5" fill="none"/>
+                                       <circle cx="25" cy="25" r="22" className="budget-bg" stroke="rgba(255,255,255,0.03)" strokeWidth="3" fill="none"/>
                                        <motion.circle 
                                            cx="25" cy="25" r="22" 
                                            className="budget-progress" 
-                                           stroke="url(#meterGradient)"
-                                           strokeWidth="3.5"
+                                           stroke="url(#budgetGradient)"
+                                           strokeWidth="3"
                                            strokeLinecap="round"
                                            fill="none"
-                                            style={{ 
-                                                filter: `drop-shadow(0 0 6px ${cashPercent > 20 ? 'var(--primary-neon)' : '#fb7185'}) drop-shadow(0 0 2px rgba(255,255,255,0.3))` 
-                                            }}
                                            initial={{ strokeDasharray: `0 ${circumference}` }}
                                            animate={{ strokeDasharray: `${dash} ${circumference}` }}
-                                           transition={{ duration: 0.8, ease: "easeOut" }}
+                                           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                                        />
                                    </svg>
                                    <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                                       <span className="text-base font-black text-white tracking-tighter">₹{Math.round(monthlyRemainingCash)}</span>
-                                       <span className="text-[7px] text-slate-400 uppercase font-black text-center leading-tight opacity-70 tracking-widest">Cash Flow</span>
+                                       <span className="text-[10px] font-black text-white tracking-tighter">₹{Math.round(spentMonth)}</span>
+                                       <span className="text-[5px] text-slate-400 uppercase font-black text-center leading-tight opacity-70 tracking-widest">of ₹{budgetAmount}</span>
                                    </div>
                                 </div>
+                                <p className="text-[8px] text-slate-500 font-bold mt-1 opacity-80">Budget</p>
                              </div>
-                        </div>
-                        
-                        <div className="mt-3 pt-2 border-t border-white/5 grid grid-cols-2 gap-2">
-                            <div className="flex flex-col">
-                                <span className="text-[8px] text-success uppercase font-black tracking-widest mb-0.5 opacity-70">Cash In</span>
-                                <span className="text-xs font-mono font-bold text-success">₹{monthlyCashIncome}</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[8px] text-alert uppercase font-black tracking-widest mb-0.5 opacity-70">Cash Out</span>
-                                <span className="text-xs font-mono font-bold text-alert">₹{monthlyCashExpense}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -597,11 +578,11 @@ export const Wallet = React.memo(({ onBack }: any) => {
             </div>
 
             <motion.button 
-                whileTap={{ scale: 0.92 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={()=>{setForm({id:null, amt:'', note:'', cat:'veg', method:'cash'}); openSheet('add'); activate('amt','number')}} 
-                className="fab-fixed fixed bottom-8 right-6 w-16 h-16 flex items-center justify-center z-50"
+                className="fab-fixed fixed bottom-8 right-6 z-50"
             >
-                <Icon name="plus" size={32}/>
+                <Icon name="plus" size={24}/>
             </motion.button>
 
             <UnifiedModal 

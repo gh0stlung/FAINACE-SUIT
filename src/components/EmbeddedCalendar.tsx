@@ -27,13 +27,13 @@ export const EmbeddedCalendar = React.memo(({ selectedDate, onChange, highlightD
     }, [viewDate, onChange]);
 
     return (
-        <div className="p-2.5 bg-white/5 rounded-3xl animate-pop h-full flex flex-col justify-center min-h-[280px] border border-white/5">
-            <div className="flex justify-between items-center mb-4">
+        <div className="p-2 bg-white/5 rounded-2xl animate-pop flex flex-col justify-center min-h-[260px] border border-white/5">
+            <div className="flex justify-between items-center mb-2">
                <div className="w-8"/>
                <div className="flex items-center gap-2">
-                  <motion.button whileTap={{ scale: 0.8 }} onClick={()=>changeMonth(-1)} className="p-1 text-slate-400"><Icon name="chevronLeft" size={16}/></motion.button>
-                  <span className="font-bold text-white transition-all tracking-tight">{viewDate.toLocaleString('default',{month:'long', year:'numeric'})}</span>
-                  <motion.button whileTap={{ scale: 0.8 }} onClick={()=>changeMonth(1)} className="p-1 text-slate-400"><Icon name="chevronRight" size={16}/></motion.button>
+                  <motion.button whileTap={{ scale: 0.8 }} onClick={()=>changeMonth(-1)} className="p-1 text-slate-400"><Icon name="chevronLeft" size={14}/></motion.button>
+                  <span className="font-black text-white transition-all tracking-widest text-xs uppercase">{viewDate.toLocaleString('default',{month:'short', year:'numeric'})}</span>
+                  <motion.button whileTap={{ scale: 0.8 }} onClick={()=>changeMonth(1)} className="p-1 text-slate-400"><Icon name="chevronRight" size={14}/></motion.button>
                </div>
                <div className="w-8"/>
             </div>
