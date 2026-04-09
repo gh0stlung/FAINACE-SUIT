@@ -81,7 +81,7 @@ function AppContent() {
   }, []);
   
   return (
-    <div className="w-full h-dvh relative overflow-hidden bg-transparent font-sans flex items-center justify-center">
+    <div className="w-full h-full relative overflow-hidden bg-transparent font-sans flex items-center justify-center">
        <div className="bg-ambience"/> <div className="orb orb-1"/> <div className="orb orb-2"/>
        <div className="w-full h-full max-w-md mx-auto relative">
            {app === 'launcher' && Launcher && <Launcher onSelect={open} toggleTheme={setTheme} theme={theme}/>}

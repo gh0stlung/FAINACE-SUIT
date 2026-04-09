@@ -48,7 +48,6 @@ body.theme-knight {
 
 * { box-sizing: border-box; }
 html {
-padding-top: env(safe-area-inset-top);
 }
 html, body {
 height: 100%;
@@ -68,9 +67,7 @@ body {
   touch-action: manipulation;
   font-family: 'Outfit', sans-serif;
   width: 100%;
-  min-height: 100vh;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  min-height: 100%;
 }
 
 .noise-overlay { 
@@ -346,13 +343,19 @@ body.theme-knight .glass-card { backdrop-filter: blur(8px); background: rgba(255
 }
 
 .fab-fixed { 
-  background: var(--primary-gradient); 
+  background: #1C1C1E; 
   color: white; 
-  border-radius: 20px; 
-  box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.25); 
+  border-radius: 50%; 
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.05); 
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.fab-fixed:active { transform: scale(0.94); }
+.fab-fixed:active { transform: scale(0.95); }
 
 /* Budget Ring */
 .budget-circle circle { 
