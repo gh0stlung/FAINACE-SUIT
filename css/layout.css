@@ -44,6 +44,6 @@
 
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes pop { '0%': { transform: 'scale(0.98) translateY(4px)', opacity: '0' }, '100%': { transform: 'scale(1) translateY(0)', opacity: '1' } }
-@keyframes expand { '0%': { opacity: '0', transform: 'translateY(-5px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+@keyframes pop { 0% { transform: scale(0.98) translateY(4px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+@keyframes expand { 0% { opacity: 0; transform: translateY(-5px); } 100% { opacity: 1; transform: translateY(0); } }
 @keyframes cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
